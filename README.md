@@ -21,11 +21,9 @@ Pipeline batch + streaming com arquitetura Medalhão (Bronze → Silver → Gold
 ### 1. Clonar o repositório
 
 ```bash
-git clone https://github.com/<SEU_USUARIO>/tc-postech-fiap.git
+git clone https://github.com/Cleivin/tc-postech-fiap.git
 cd tc-postech-fiap
 ```
-
-> Substitua `<SEU_USUARIO>` pelo seu usuário do GitHub.
 
 ### 2. Criar e ativar o ambiente virtual
 
