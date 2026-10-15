@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# Credenciais e segredos (CRÍTICO: nunca subir no Git)
+credentials/*
+!credentials/.gitkeep
+.env
+.env.*
+!.env.example
+
+# Chaves JSON soltas (Service Account etc.)
+**/gcp-sa-key.json
+*-sa-key.json
+service-account*.json
+
+# Dados locais e temporários
+data/
+*.parquet
+*.tmp
+# CSVs gerados na raiz (mantém material didático em docs/)
+/*.csv
+
+# IDEs e editores
+.vscode/
+.idea/
+.cursor/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+__MACOSX/

@@ -1,0 +1,248 @@
+[
+  {
+    "folder": "00_Capitulo_de_Projeto",
+    "disc": "Capítulo de Projeto — Data Prepare",
+    "aula": 0,
+    "titulo": "Capítulo de Projeto — Data Prepare",
+    "resumo": "Introdução oficial da Fase 2 (Data Prepare) no CRISP-DM. Explica por que cientistas de dados precisam dominar engenharia de dados, arquitetura, SQL, NoSQL e ETL antes da modelagem.",
+    "md": "00_capitulo_de_projeto_data_prepare.md",
+    "pdf": "00_capitulo_de_projeto_data_prepare.pdf",
+    "topicos": [
+      "CRISP-DM Data Understanding e Data Preparation",
+      "Relação engenharia de dados × ciência de dados",
+      "Visão das 4 disciplinas da fase",
+      "Escala, qualidade e custo dos dados"
+    ]
+  },
+  {
+    "folder": "01_Arquitetura_de_Big_Data",
+    "disc": "Arquitetura de Big Data",
+    "aula": 1,
+    "titulo": "Arquitetura de dados: Data Lake vs Data Warehouse",
+    "resumo": "Compara Data Lake e Data Warehouse, casos de uso e quando combinar (lakehouse).",
+    "md": "aula_01_arquitetura_de_dados_data_lake_vs_data_warehouse.md",
+    "pdf": "aula_01_arquitetura_de_dados_data_lake_vs_data_warehouse.pdf",
+    "topicos": [
+      "Data Lake",
+      "Data Warehouse",
+      "Lakehouse",
+      "dados brutos vs curados"
+    ]
+  },
+  {
+    "folder": "01_Arquitetura_de_Big_Data",
+    "disc": "Arquitetura de Big Data",
+    "aula": 2,
+    "titulo": "Processamento distribuído: Hadoop e Spark",
+    "resumo": "Fundamentos de processamento distribuído com Hadoop e Apache Spark.",
+    "md": "aula_02_processamento_distribuido_hadoop_e_spark.md",
+    "pdf": "aula_02_processamento_distribuido_hadoop_e_spark.pdf",
+    "topicos": [
+      "Hadoop",
+      "MapReduce",
+      "Spark",
+      "cluster",
+      "paralelismo"
+    ]
+  },
+  {
+    "folder": "01_Arquitetura_de_Big_Data",
+    "disc": "Arquitetura de Big Data",
+    "aula": 3,
+    "titulo": "Manipulação de Dados com Spark",
+    "resumo": "Hands-on de manipulação com Spark/PySpark (filtros, joins, agregações, janelas).",
+    "md": "aula_03_manipulacao_de_dados_com_spark.md",
+    "pdf": "aula_03_manipulacao_de_dados_com_spark.pdf",
+    "topicos": [
+      "PySpark",
+      "DataFrame",
+      "transformações",
+      "arquitetura Medallion"
+    ]
+  },
+  {
+    "folder": "01_Arquitetura_de_Big_Data",
+    "disc": "Arquitetura de Big Data",
+    "aula": 4,
+    "titulo": "Data Mesh",
+    "resumo": "Arquitetura Data Mesh: domínio, produtos de dados e governança descentralizada.",
+    "md": "aula_04_data_mesh.md",
+    "pdf": "aula_04_data_mesh.pdf",
+    "topicos": [
+      "Data Mesh",
+      "produtos de dados",
+      "governança",
+      "domínio"
+    ]
+  },
+  {
+    "folder": "02_Bancos_de_Dados_Relacionais",
+    "disc": "Bancos de Dados Relacionais",
+    "aula": 1,
+    "titulo": "Banco de dados Relacionais",
+    "resumo": "Fundamentos de bancos relacionais para cientistas de dados e hands-on inicial.",
+    "md": "aula_01_banco_de_dados_relacionais.md",
+    "pdf": "aula_01_banco_de_dados_relacionais.pdf",
+    "topicos": [
+      "modelo relacional",
+      "tabelas",
+      "chaves",
+      "SQL básico",
+      "MySQL"
+    ]
+  },
+  {
+    "folder": "02_Bancos_de_Dados_Relacionais",
+    "disc": "Bancos de Dados Relacionais",
+    "aula": 2,
+    "titulo": "SQL para análise avançada: agregações e subqueries",
+    "resumo": "SQL analítico: GROUP BY, window functions, CTEs e subqueries para exploração.",
+    "md": "aula_02_sql_para_analise_avancada_agregacoes_e_subqueries.md",
+    "pdf": "aula_02_sql_para_analise_avancada_agregacoes_e_subqueries.pdf",
+    "topicos": [
+      "agregações",
+      "subqueries",
+      "CTE",
+      "window functions",
+      "joins"
+    ]
+  },
+  {
+    "folder": "02_Bancos_de_Dados_Relacionais",
+    "disc": "Bancos de Dados Relacionais",
+    "aula": 3,
+    "titulo": "Otimização de queries: índices, partições e boas práticas",
+    "resumo": "Performance de consultas: índices, partições e práticas para SQL rápido.",
+    "md": "aula_03_otimizacao_de_queries_indices_particoes_e_boas_praticas.md",
+    "pdf": "aula_03_otimizacao_de_queries_indices_particoes_e_boas_praticas.pdf",
+    "topicos": [
+      "índices",
+      "partições",
+      "EXPLAIN",
+      "boas práticas SQL"
+    ]
+  },
+  {
+    "folder": "03_NoSQL_para_Ciencia_de_Dados",
+    "disc": "NoSQL para Ciência de Dados",
+    "aula": 1,
+    "titulo": "Introdução ao NoSQL: conceitos e diferenças do modelo relacional",
+    "resumo": "Quando usar NoSQL, tipos de bancos e contraste com o modelo relacional.",
+    "md": "aula_01_introducao_ao_nosql_conceitos_e_diferencas_do_modelo_relacional.md",
+    "pdf": "aula_01_introducao_ao_nosql_conceitos_e_diferencas_do_modelo_relacional.pdf",
+    "topicos": [
+      "NoSQL",
+      "BASE vs ACID",
+      "escala horizontal",
+      "tipos de NoSQL"
+    ]
+  },
+  {
+    "folder": "03_NoSQL_para_Ciencia_de_Dados",
+    "disc": "NoSQL para Ciência de Dados",
+    "aula": 2,
+    "titulo": "Modelagem NoSQL: chave-valor, documentos, colunas e grafos",
+    "resumo": "Modelagem por padrão de acesso nos quatro principais modelos NoSQL.",
+    "md": "aula_02_modelagem_nosql_chave_valor_documentos_colunas_e_grafos.md",
+    "pdf": "aula_02_modelagem_nosql_chave_valor_documentos_colunas_e_grafos.pdf",
+    "topicos": [
+      "chave-valor",
+      "documentos",
+      "colunar",
+      "grafos",
+      "modelagem"
+    ]
+  },
+  {
+    "folder": "03_NoSQL_para_Ciencia_de_Dados",
+    "disc": "NoSQL para Ciência de Dados",
+    "aula": 3,
+    "titulo": "Consultas em NoSQL: operadores, filtros e agregações",
+    "resumo": "Consultas, filtros e pipelines de agregação em bancos NoSQL.",
+    "md": "aula_03_consultas_em_nosql_operadores_filtros_e_agregacoes.md",
+    "pdf": "aula_03_consultas_em_nosql_operadores_filtros_e_agregacoes.pdf",
+    "topicos": [
+      "operadores",
+      "filtros",
+      "agregações",
+      "MongoDB"
+    ]
+  },
+  {
+    "folder": "03_NoSQL_para_Ciencia_de_Dados",
+    "disc": "NoSQL para Ciência de Dados",
+    "aula": 4,
+    "titulo": "Banco Vetorial",
+    "resumo": "Bancos vetoriais, embeddings e busca por similaridade para IA generativa/RAG.",
+    "md": "aula_04_banco_vetorial.md",
+    "pdf": "aula_04_banco_vetorial.pdf",
+    "topicos": [
+      "embeddings",
+      "similaridade",
+      "RAG",
+      "vector DB"
+    ]
+  },
+  {
+    "folder": "04_ETL_Pipelines",
+    "disc": "ETL Pipelines",
+    "aula": 1,
+    "titulo": "Pipelines ETL/ELT (extração, transformação, carga)",
+    "resumo": "Fundamentos de ETL vs ELT e construção de pipelines de dados.",
+    "md": "aula_01_pipelines_etl_elt_extracao_transformacao_carga.md",
+    "pdf": "aula_01_pipelines_etl_elt_extracao_transformacao_carga.pdf",
+    "topicos": [
+      "ETL",
+      "ELT",
+      "pipeline",
+      "orquestração"
+    ]
+  },
+  {
+    "folder": "04_ETL_Pipelines",
+    "disc": "ETL Pipelines",
+    "aula": 2,
+    "titulo": "Integração de dados em tempo real (Kafka)",
+    "resumo": "Streaming com Kafka: tópicos, producers, consumers e janelas.",
+    "md": "aula_02_integracao_de_dados_em_tempo_real_kafka.md",
+    "pdf": "aula_02_integracao_de_dados_em_tempo_real_kafka.pdf",
+    "topicos": [
+      "Kafka",
+      "streaming",
+      "tópicos",
+      "eventos",
+      "tempo real"
+    ]
+  },
+  {
+    "folder": "04_ETL_Pipelines",
+    "disc": "ETL Pipelines",
+    "aula": 3,
+    "titulo": "Cloud Data (AWS S3, GCP BigQuery, Azure Data Lake)",
+    "resumo": "Serviços de armazenamento e analytics em AWS, GCP e Azure.",
+    "md": "aula_03_cloud_data_aws_s3_gcp_bigquery_azure_data_lake.md",
+    "pdf": "aula_03_cloud_data_aws_s3_gcp_bigquery_azure_data_lake.pdf",
+    "topicos": [
+      "S3",
+      "BigQuery",
+      "Azure Data Lake",
+      "cloud storage"
+    ]
+  },
+  {
+    "folder": "04_ETL_Pipelines",
+    "disc": "ETL Pipelines",
+    "aula": 4,
+    "titulo": "FinOps em ambiente Cloud",
+    "resumo": "Gestão de custo em cloud: trade-offs de performance, escala e orçamento.",
+    "md": "aula_04_finops_em_ambiente_cloud.md",
+    "pdf": "aula_04_finops_em_ambiente_cloud.pdf",
+    "topicos": [
+      "FinOps",
+      "custo cloud",
+      "otimização",
+      "particionamento",
+      "Parquet"
+    ]
+  }
+]

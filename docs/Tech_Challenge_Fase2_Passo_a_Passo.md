@@ -1,0 +1,404 @@
+# Tech Challenge Fase 2 — Passo a passo de implementação
+
+Guia único para construir o projeto **neste repositório**, na ordem em que o código deve nascer.
+
+Enunciado oficial: `POSTECH - IAST - Tech Challenge - Fase 2.pdf`. Mapa das aulas: [ROTEIRO_ESTUDO.md](./ROTEIRO_ESTUDO.md).
+
+---
+
+## Decisões já travadas
+
+O README da raiz e o `.env.example` já fecharam a arquitetura. Os passos abaixo seguem isso.
+
+| Decisão | Valor neste projeto |
+|---------|---------------------|
+| Cloud | GCP, região `us-central1`, BigQuery em `US` |
+| Projeto | `GCP_PROJECT_ID` (exemplo: `tc-postech-fiap`) |
+| Lake | Bucket `GCP_BUCKET_NAME`, Parquet particionado |
+| Warehouse | BigQuery, SQL nas camadas Silver e Gold |
+| Fonte | Dataset público `basedosdados.br_inep_avaliacao_alfabetizacao` |
+| Padrão de carga | **ELT**: extrair e gravar cru; transformar no BigQuery |
+| Streaming | Pub/Sub, tópico `alfabetizacao-stream-topic` (o papel do Kafka da aula) |
+| Arquitetura de processamento | Híbrida **Lambda**: batch no histórico oficial + speed layer simulada |
+| Custo | Always Free + alerta de billing em R$ 1,00; a tabela FinOps projeta o custo se a cadência fosse de produção |
+
+Motivo de cada escolha (vai para a seção Decisões do README):
+
+- **GCS + BigQuery** é o lakehouse da aula de arquitetura, no stack serverless da aula de Cloud Data. O dado oficial já está no BigQuery da Base dos Dados, então a extração não copia o país inteiro para o notebook.
+- **Pub/Sub** cumpre mensageria, retenção e entrega *at-least-once* sem um cluster Kafka 24/7. A aula de FinOps trata cluster de streaming ligado o tempo todo como custo contínuo; neste volume simulado isso estoura o teto gratuito sem ganho analítico.
+- **Pandas + SQL no BigQuery** no lugar de um cluster Spark. A aula de Spark ensina o padrão Medalhão (ler cru, limpar, agregar). O volume do indicador cabe em SQL serverless. Spark fica como evolução se o microdado passar a não caber na cota.
+
+---
+
+## O que o repositório já tem
+
+| Item | Estado |
+|------|--------|
+| `.env.example`, `.gitignore`, `requirements.txt` | Pronto |
+| `test_gcp_connection.py` | Pronto para Storage e BigQuery |
+| README de setup (venv, chave, teste) | Pronto |
+| Pastas `bronze/`, `silver/`, `gold/`, `quality/`, `streaming/`, `evidence/` | Ainda não existem — são o trabalho daqui para frente |
+| Pipeline, métricas, tabela FinOps, vídeo | Ainda não existem |
+
+O teste de Pub/Sub hoje só monta o caminho do tópico e imprime OK. No passo 1, confirme que o tópico e a subscription existem de verdade (`get_topic` / `get_subscription`).
+
+Credencial fica em `credentials/gcp-sa-key.json`. Ela não sobe no Git.
+
+---
+
+## Mapa: aula → onde entra no projeto
+
+Use a aula como repertório. O código do challenge aplica o conceito no indicador de alfabetização, no dataset da aula (vendas, GlobalTech, Kafka local).
+
+| Aula | O que levar para o código |
+|------|---------------------------|
+| [Capítulo Data Prepare](./00_Capitulo_de_Projeto/00_capitulo_de_projeto_data_prepare.md) | CRISP-DM: entender a fonte e a qualidade **antes** de modelar. A Gold é o terreno da Fase 3. |
+| [Lake vs Warehouse](./01_Arquitetura_de_Big_Data/aula_01_arquitetura_de_dados_data_lake_vs_data_warehouse.md) | Lake = Parquet cru no GCS. Warehouse = tabelas SQL no BigQuery. Os dois convivem. |
+| [Hadoop e Spark](./01_Arquitetura_de_Big_Data/aula_02_processamento_distribuido_hadoop_e_spark.md) | Pensar em partição e em não trazer a base inteira para a RAM. A execução daqui é SQL no BigQuery. |
+| [Spark / Medalhão](./01_Arquitetura_de_Big_Data/aula_03_manipulacao_de_dados_com_spark.md) | Três cargas separadas: Bronze sem regra de negócio, Silver com limpeza e join, Gold com agregação. Prática da aula: `05_Extras_GitHub/_repo/Fase 2/Arquitetura de Big Data/` (`02_`, `03_`, `04_carga_camada_*`). |
+| [Data Mesh](./01_Arquitetura_de_Big_Data/aula_04_data_mesh.md) | Cada tabela Gold é um produto com schema explícito, dono e checagem antes de publicar. |
+| [SQL relacional](./02_Bancos_de_Dados_Relacionais/aula_01_banco_de_dados_relacionais.md) | Chaves de UF, município, ano, rede e série. `dicionario` traduz código; não invente o de-para. |
+| [Agregações e subqueries](./02_Bancos_de_Dados_Relacionais/aula_02_sql_para_analise_avancada_agregacoes_e_subqueries.md) | Gold em CTE: indicador, meta × resultado, evolução. `NULL` permanece `NULL` nas médias. |
+| [Índices e partições](./02_Bancos_de_Dados_Relacionais/aula_03_otimizacao_de_queries_indices_particoes_e_boas_praticas.md) | Particionar por `ano`, clusterizar por município/UF, `SELECT` só das colunas usadas, `dry_run` antes da query grande. |
+| [NoSQL — conceitos](./03_NoSQL_para_Ciencia_de_Dados/aula_01_introducao_ao_nosql_conceitos_e_diferencas_do_modelo_relacional.md) | Indicador oficial fica relacional. Evento simulado é documento JSON. |
+| [Modelagem NoSQL](./03_NoSQL_para_Ciencia_de_Dados/aula_02_modelagem_nosql_chave_valor_documentos_colunas_e_grafos.md) | O payload do Pub/Sub é um documento: um evento, um JSON, chave = `event_id`. |
+| [Consultas NoSQL](./03_NoSQL_para_Ciencia_de_Dados/aula_03_consultas_em_nosql_operadores_filtros_e_agregacoes.md) | No consumer: filtrar inválido, deduplicar, agregar janela curta antes de gravar. |
+| [Banco vetorial](./03_NoSQL_para_Ciencia_de_Dados/aula_04_banco_vetorial.md) | Fora do escopo desta entrega. Cite no README como uso futuro da Gold (busca por municípios parecidos), sem implementar. |
+| [ETL / ELT](./04_ETL_Pipelines/aula_01_pipelines_etl_elt_extracao_transformacao_carga.md) | Batch = extração completa com histórico. Stream = extração incremental. Bronze no lake; transformação no warehouse. |
+| [Kafka](./04_ETL_Pipelines/aula_02_integracao_de_dados_em_tempo_real_kafka.md) | Produtor, tópico, consumidor, lag, duplicata, carimbo de tempo de produção separado do de ingestão. Prática: notebooks em `05_Extras_GitHub/_repo/Fase 2/ETL Pipelines/02_Kafka/`. |
+| [Cloud Data](./04_ETL_Pipelines/aula_03_cloud_data_aws_s3_gcp_bigquery_azure_data_lake.md) | GCS no papel do lake; BigQuery no papel do warehouse serverless (partição, cluster, custo por bytes lidos). |
+| [FinOps](./04_ETL_Pipelines/aula_04_finops_em_ambiente_cloud.md) | Parquet, compressão, partição, mesma região, job que liga e desliga, tabela com quantidade medida. |
+
+---
+
+## Ordem de construção
+
+`Ambiente → perfil da fonte → Bronze → qualidade da Bronze → Silver + joins → Gold → streaming → métricas e alerta → FinOps → README e evidências → vídeo`
+
+Cada passo termina com um critério de pronto. Só avance com ele verdadeiro.
+
+---
+
+### Passo 1 — Travar o ambiente
+
+**Aulas:** Cloud Data, FinOps.
+
+1. Ative a `.venv`, instale `requirements.txt`, copie `.env.example` para `.env`, coloque a chave em `credentials/`.
+2. Rode `python test_gcp_connection.py` e guarde a saída em `evidence/`.
+3. No console GCP, confirme:
+   - bucket na região `us-central1`
+   - tópico `alfabetizacao-stream-topic`
+   - subscription (pull) ligada a esse tópico, com retenção curta
+   - orçamento com alerta em R$ 1,00
+4. Ajuste o teste de Pub/Sub para falhar se `get_topic` não achar o tópico.
+
+**Pronto quando:** Storage, BigQuery (5 linhas do `dicionario`) e o tópico real respondem, e o print está em `evidence/`.
+
+---
+
+### Passo 2 — Entender as 6 entidades (Data Understanding)
+
+**Aulas:** Capítulo Data Prepare, SQL relacional, agregações.
+
+Dataset: `basedosdados.br_inep_avaliacao_alfabetizacao`.
+
+| Entidade que a banca cobra | Tabela |
+|----------------------------|--------|
+| Alunos | `alunos` |
+| Município | `municipio` |
+| UF | `uf` |
+| Meta Brasil | `meta_alfabetizacao_brasil` |
+| Meta UF | `meta_alfabetizacao_uf` |
+| Meta município | `meta_alfabetizacao_municipio` |
+| Tradução de códigos | `dicionario` (apoio; não substitui nenhuma das seis) |
+
+Faça em `sql/00_perfil.sql` (e salve o resultado em `evidence/perfil/`):
+
+1. `SELECT` com limite e a lista de colunas de cada tabela. Anote o nome real de ano, UF, município, rede, série, taxa, proficiência, presença e peso. Não chute o nome da coluna.
+2. Conte linhas, anos distintos, nulos nas chaves e códigos que não existem no `dicionario`.
+3. Confira a meta pactuada: rede pública, `meta_alfabetizacao_2030` = **80**. Universalização é outro número e entra no relatório como cenário, com outro nome de coluna.
+4. Escreva em `docs/contrato_dados.md` (curto):
+   - grain de cada tabela (o que é uma linha)
+   - chaves de join, com o tipo de cada lado
+   - uma anomalia real encontrada (vira diferencial e limitação do README)
+
+**Pronto quando:** as seis tabelas têm grain, chave e uma anomalia anotada, e nenhuma coluna do contrato foi inventada.
+
+---
+
+### Passo 3 — Bronze (raw, com histórico)
+
+**Aulas:** Lake vs Warehouse, Medalhão (carga Bronze), ETL/ELT (extração completa).
+
+Script: `bronze/ingest_batch.py`.
+
+Para cada uma das 6 tabelas + `dicionario`:
+
+1. Ler do BigQuery público **só as colunas que o contrato listou** (aula de otimização: não usar `SELECT *`).
+2. Gravar Parquet no GCS, sem alterar valor de negócio:
+
+```text
+gs://<bucket>/bronze/<entidade>/ingestion_date=YYYY-MM-DD/run_id=<id>/part-*.parquet
+```
+
+3. Modo de escrita: **append de uma partição nova**. Uma run nova cria outro `run_id`. Não use overwrite do prefixo `bronze/<entidade>/`, nem `WRITE_TRUNCATE` da tabela inteira.
+4. Colunas técnicas permitidas na Bronze (não são regra de negócio): `ingestion_ts`, `run_id`, `source_table`.
+5. Registrar no BigQuery uma external table ou uma tabela nativa espelhada, dataset `alfabetizacao_bronze`, para a Silver consultar SQL sem baixar o Parquet no pandas.
+
+Evidência: job id do BigQuery, contagem de linhas por entidade, caminho do objeto. Grave em `evidence/bronze/`.
+
+**Pronto quando:** uma segunda execução deixa a primeira intacta no bucket e as seis entidades aparecem com contagem > 0.
+
+---
+
+### Passo 4 — Regras de qualidade (antes de publicar a camada seguinte)
+
+**Aulas:** Data Mesh (governança no código), ETL (falha de extração degrada o modelo).
+
+Pacote: `quality/`.
+
+Duas classes de regra:
+
+| Classe | Se falhar |
+|--------|-----------|
+| Bloqueante | O script sai com código ≠ 0 e **não grava** a camada seguinte |
+| Informativa | Grava o resultado e segue |
+
+Mínimo bloqueante:
+
+- chave nula
+- duplicata da chave da entidade
+- código de rede ou série ausente no `dicionario` acima de um limite que você justificar (0 é um bom começo para código obrigatório)
+- taxa de match do join abaixo do limiar (passo 5)
+
+Persistir cada resultado em `alfabetizacao_ops.quality_checks` com `append` (`run_id`, regra, camada, status, valor, limiar, `checked_at`). Log de terminal não conta.
+
+Prova obrigatória: `quality/prove_failure.py` injeta uma linha duplicada ou uma chave órfã, a regra bloqueante dispara, a Silver/Gold **não** é publicada, e o registro da falha fica na tabela de checks. Salve stdout + a linha da tabela em `evidence/quality/`.
+
+`except` que só imprime e devolve sucesso anula o critério.
+
+**Pronto quando:** existe uma execução que falha de propósito, com evidência, e outra execução limpa que passa.
+
+---
+
+### Passo 5 — Silver (limpar, tipar, juntar)
+
+**Aulas:** Medalhão (carga Silver), SQL (chaves, `NULL`, CTE), otimização (partição).
+
+Script: `silver/transform.py` + `sql/02_silver.sql`.
+
+1. Ler a Bronze da **última** `ingestion_date`/`run_id` (ou a que o parâmetro mandar).
+2. Padronizar nomes e tipos. Traduzir códigos com join no `dicionario`. Código sem tradução vira a categoria `desconhecido`, e a contagem dessa categoria entra na qualidade.
+3. Normalizar a chave dos dois lados do join (mesmo tipo: string com string, inteiro com inteiro) **antes** do `JOIN`.
+4. Depois de **cada** join, calcular:
+
+```text
+taxa_match = linhas_com_par / linhas_do_lado_esquerdo
+```
+
+Gravar a taxa em `quality_checks`. Se ficar abaixo do limiar justificado no contrato, a regra bloqueante interrompe o job.
+
+5. `NULL` continua `NULL`. Não preencha proficiência nem meta com 0.
+6. Coluna `origem` = `oficial` em tudo que veio da Base dos Dados.
+
+Joins que a análise precisa de fato (todos têm de aparecer na Gold, não só existir na Silver):
+
+- município × meta municipal (mesmo ano-alvo, mesma rede, mesma série)
+- UF × meta da UF
+- Brasil (agregado) × meta Brasil
+- alunos entram na validação cruzada da Gold (passo 6), no mesmo recorte geográfico
+
+Dataset de saída: `alfabetizacao_silver`, tabelas particionadas por ano.
+
+**Pronto quando:** taxa de match de cada join está persistida, o limiar está escrito no README, e as seis entidades têm coluna usada adiante.
+
+---
+
+### Passo 6 — Gold (produto analítico)
+
+**Aulas:** Medalhão (carga Gold), agregações/CTE/window, Data Mesh, otimização.
+
+Script: `gold/build.py` + `sql/03_gold.sql`. Dataset `alfabetizacao_gold`.
+
+Publique só se a qualidade bloqueante da Silver passou. Cada tabela é um produto: nome estável, schema no contrato, descrição de uma linha.
+
+| Produto | Uma linha é | Uso |
+|---------|-------------|-----|
+| `indicador_municipio` | município + ano + rede + série | painel e Fase 3 |
+| `indicador_uf` | UF + ano + rede + série | comparação estadual |
+| `meta_vs_resultado` | mesmo grain da meta | distância até a meta **pactuada** |
+| `evolucao_temporal` | série no tempo (window `LAG`) | trajetória, não previsão |
+| `validacao_microdado` | recorte em que der para recalcular | diferencial: taxa pelos `alunos` vs taxa oficial |
+
+Regras de cálculo:
+
+- Comparar meta e resultado na **mesma** rede e na **mesma** série.
+- Meta ausente é um terceiro estado (`sem_meta`), separado de `atingiu` e `nao_atingiu`.
+- Indicador nacional ou de UF segue o peso da fonte (alunos / peso amostral). Se alguma coluna for média simples de municípios, o nome da coluna diz isso (`media_simples_municipios`).
+- Taxa a partir de `alunos`: denominador = avaliados, com peso amostral. Presença e alfabetizado vêm do `dicionario`.
+- Projeção até 2030, se existir, chama-se cenário. Não chame de previsão.
+- Guardar a Gold (tabelas BigQuery + export Parquet em `gs://<bucket>/gold/`) para a Fase 3. No README, diga quais colunas são alvo de ML e quais seriam vazamento se entrassem como feature (a própria taxa que o modelo tentaria prever, e a meta do mesmo ano).
+
+Partição por `ano`. Cluster por `id_municipio` ou `sigla_uf`, conforme o grain. Rode `QueryJobConfig.dry_run` e anote `total_bytes_processed` para o FinOps.
+
+**Pronto quando:** as três perguntas do enunciado têm tabela (indicador por município, meta × resultado, evolução) e um `SELECT` de conferência bate com um número oficial que você anotou no perfil.
+
+---
+
+### Passo 7 — Streaming simulado
+
+**Aulas:** Kafka (produtor, tópico, consumidor, duplicata, tempo), NoSQL documento, ETL incremental, Lambda.
+
+Pasta: `streaming/`.
+
+Isto é a camada rápida. Ela não regrava o histórico oficial.
+
+**Produtor** (`streaming/producer.py`):
+
+- Publica no tópico documentos JSON, por exemplo uma atualização fictícia de indicador municipal.
+- Campos mínimos: `event_id`, `produced_at` (relógio no momento do `publish`), `entidade`, `chave` (município/ano/rede/série), `valor`, `origem = "simulado"`.
+- `produced_at` é gerado uma vez, na produção. O consumer não copia esse campo para o relógio de ingestão.
+
+**Consumidor** (`streaming/consumer.py`):
+
+- Pull da subscription.
+- `ingested_at` = agora, na ingestão. Latência = `ingested_at - produced_at`. Se os dois nascerem na mesma linha de código, a latência é sempre zero e o critério cai.
+- Evento inválido (JSON quebrado, chave ausente, valor fora do domínio): vai para `gs://<bucket>/bronze/stream_quarentena/` e **não** entra na Gold oficial. Ack só depois de persistir a quarentena ou o evento bom.
+- Duplicata (`event_id` já visto): contabilizar e não somar de novo. A aula e o enunciado assumem *at-least-once*.
+- Evento bom: append em `gs://<bucket>/bronze/stream/ingestion_date=.../` e upsert na tabela `alfabetizacao_gold.eventos_stream`.
+- Métrica de lag: mensagens ainda não confirmadas na subscription (o “consumer lag” da aula de Kafka).
+
+Separação obrigatória: consultas do indicador oficial filtram `origem = 'oficial'`. A tabela de eventos deixa `origem = 'simulado'` visível. Número de simulador não entra na taxa oficial.
+
+No README, três linhas comparando com o batch: latência (segundos vs carga do dia), frequência (evento vs run completa), garantia (*at-least-once* com dedupe vs snapshot da fonte).
+
+**Pronto quando:** um evento válido chega na Gold de streaming com latência > 0, um duplicado não dobra o valor, um inválido fica na quarentena, e a tabela oficial não muda de número por causa do simulador.
+
+---
+
+### Passo 8 — Observabilidade
+
+**Aulas:** FinOps (operar), Kafka (lag), Data Mesh (checagem na publicação).
+
+Tabela `alfabetizacao_ops.pipeline_runs`, sempre `append`:
+
+| Campo | Exemplo |
+|-------|---------|
+| `run_id` | uuid |
+| `etapa` | bronze / silver / gold / stream |
+| `started_at`, `finished_at` | timestamps |
+| `duration_seconds` | medido |
+| `rows_in`, `rows_out` | contagens |
+| `status` | success / failed |
+| `bytes_processed` | dry run ou job statistics do BigQuery |
+
+Alerta que alguém receberia em produção:
+
+- Falha bloqueante publica uma mensagem num tópico `alfabetizacao-alertas` (ou dispara o alerta de log do Cloud Monitoring que você realmente configurou).
+- Documente no README: quem vê, em qual canal, e em quanto tempo. Se o canal for o e-mail do orçamento mais o tópico de alerta, descreva esses dois. Não escreva “temos PagerDuty” se não tiver.
+
+Latência de streaming persiste na mesma tabela de runs ou em `stream_latency` (mínimo, máximo, média do lote).
+
+**Pronto quando:** duas runs seguidas aparecem como duas linhas (a segunda não apagou a primeira) e uma falha gerou registro + mensagem de alerta, com print em `evidence/ops/`.
+
+---
+
+### Passo 9 — FinOps com número medido
+
+**Aula:** FinOps. Apoio: otimização de SQL e Cloud Data.
+
+Script: `ops/finops_snapshot.py`. Lê tamanho dos objetos no bucket, `total_bytes_processed` dos jobs e duração em `pipeline_runs`. Escreve `evidence/finops/custo.md`.
+
+Tabela que entra no README (preços públicos GCP na região usada; cite a data da consulta):
+
+| Serviço | Unidade | Quantidade medida | Preço unitário | Custo mensal projetado |
+|---------|---------|-------------------|----------------|------------------------|
+| Cloud Storage | GB-mês | tamanho real do bucket | | |
+| BigQuery | TiB processados | bytes do dry run × cadência | | |
+| Pub/Sub | GiB de mensagens | bytes publicados no teste × cadência | | |
+| Computação do job | — | duração medida; aqui o motor é serverless | | |
+
+Cadência para a projeção (escreva a premissa): por exemplo 1 batch/dia e 1.000 eventos/dia. O número de bytes é o medido; a cadência é a premissa. Diga que a execução atual cabe no Always Free e que a coluna da direita é o custo se essa cadência rodasse fora da cota.
+
+Decisões que a aula pede para aparecer no texto: Parquet comprimido, partição por data de ingestão e por ano, colunas explícitas, GCS e processamento na mesma região, consumer de streaming que não fica com cluster ligado.
+
+**Pronto quando:** a tabela tem quantidade tirada de log/API, não de chute, e a premissa da cadência está na mesma página.
+
+---
+
+### Passo 10 — README, evidências e clone limpo
+
+**Aulas:** todas as decisões acima viram a seção Decisões.
+
+O README da raiz já cobre setup. Complete as seções que a banca lê:
+
+1. Contexto do Compromisso Nacional e do corte de 743 pontos.
+2. Diagrama do que **rodou** (GCS, BigQuery, Pub/Sub, as três camadas, o ramo de quarentena).
+3. Tecnologias: o que está no repo e o que fica para depois (orquestrador, Spark, banco vetorial).
+4. Trade-offs: ELT, Lambda, lake + warehouse, Pub/Sub no lugar de Kafka, SQL no lugar de cluster, BigQuery público no lugar de download.
+5. Monitoramento + tabela FinOps.
+6. Uso em IA: Gold pronta para a Fase 3 e colunas que vazam o alvo.
+7. Limitações: simulação, lacuna que você achou no passo 2, free tier.
+8. Link do vídeo (passo 11).
+
+Organização que o avaliador precisa achar:
+
+```text
+bronze/  silver/  gold/  quality/  streaming/  ops/  sql/
+evidence/   # prints, job ids, contagens, falha provocada, finops
+```
+
+Teste de reprodutibilidade: outro diretório, clone, `.env` novo, chave, `pip install -r requirements.txt`, comandos do README até a Gold. Ajuste o README até esse caminho funcionar. Versões no `requirements.txt` com pin (`==`), não só `>=`, antes da entrega.
+
+Nenhuma chave no Git. Confira `git status` em `credentials/` e `.env`.
+
+**Pronto quando:** um clone limpo, seguindo só o README, chega na Gold e no consumo de um evento.
+
+---
+
+### Passo 11 — Vídeo (≤ 5 min)
+
+Roteiro, nesta ordem:
+
+1. Problema: alfabetização até o 2º ano, indicador, meta pactuada 80.
+2. Arquitetura em uma frase: batch histórico + evento simulado, Bronze → Silver → Gold no GCP.
+3. Um número analítico que está na Gold (município ou UF, ano, rede, série), igual ao do repositório.
+4. O que a Fase 3 pode prever e o que não pode entrar como feature.
+
+Eixos de gráfico com rótulo. Link no README.
+
+---
+
+## Checklist da rubrica
+
+| Pts | Critério | Onde se prova |
+|-----|----------|----------------|
+| 15 | Batch + streaming | passos 3 e 7, com `origem` |
+| 15 | Medalhão | caminhos GCS + datasets `alfabetizacao_bronze/silver/gold` |
+| 10 | Qualidade | passo 4, incluindo a falha provocada e a taxa de join |
+| 10 | Monitoramento | `pipeline_runs` acumulada + alerta |
+| 10 | FinOps | tabela do passo 9 |
+| 10 | Cloud + repo | jobs reais em `evidence/` + clone limpo |
+| 5 | README | passo 10 |
+| 15 | Vídeo | passo 11 |
+
+Diferenciais, se sobrar tempo, nesta ordem: validação cruzada do microdado (já está na Gold), uma anomalia documentada (passo 2), um teste automatizado da regra de join. Orquestrador e Terraform são bônus; não bloqueiam a nota se o README não fingir que existem.
+
+---
+
+## Comandos-alvo (quando os scripts existirem)
+
+```powershell
+python test_gcp_connection.py
+python bronze/ingest_batch.py
+python quality/validate.py --layer bronze
+python silver/transform.py
+python quality/validate.py --layer silver
+python gold/build.py
+python streaming/producer.py --n 20
+python streaming/consumer.py
+python quality/prove_failure.py
+python ops/finops_snapshot.py
+```
+
+`prove_failure.py` é o único comando que deve terminar com erro.
