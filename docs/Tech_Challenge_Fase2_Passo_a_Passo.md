@@ -35,14 +35,22 @@ Motivo de cada escolha (vai para a seção Decisões do README):
 | Item | Estado |
 |------|--------|
 | `.env.example`, `.gitignore`, `requirements.txt` | Pronto |
-| `test_gcp_connection.py` | Pronto para Storage e BigQuery |
+| `test_gcp_connection.py` | Pronto (Storage + BigQuery + Pub/Sub `get_topic`) |
 | README de setup (venv, chave, teste) | Pronto |
-| Pastas `bronze/`, `silver/`, `gold/`, `quality/`, `streaming/`, `evidence/` | Ainda não existem — são o trabalho daqui para frente |
+| `sql/00_perfil.sql`, `docs/contrato_dados.md` | Pronto (passo 2) |
+| Evidências em `evidence/passo_01/` e `evidence/passo_02/` | Pronto |
+| Pastas `bronze/`, `silver/`, `gold/`, `quality/`, `streaming/` | Estrutura vazia — passos 3+ |
 | Pipeline, métricas, tabela FinOps, vídeo | Ainda não existem |
 
-O teste de Pub/Sub hoje só monta o caminho do tópico e imprime OK. No passo 1, confirme que o tópico e a subscription existem de verdade (`get_topic` / `get_subscription`).
-
 Credencial fica em `credentials/gcp-sa-key.json`. Ela não sobe no Git.
+
+### Progresso dos passos
+
+| Passo | Status | Evidência |
+|-------|--------|-----------|
+| 1 Ambiente | **Feito** | `evidence/passo_01/` |
+| 2 Perfil / contrato | **Feito** | `evidence/passo_02/` + `docs/contrato_dados.md` |
+| 3–11 | Pendente | pastas vazias em `evidence/passo_XX/` |
 
 ---
 
@@ -81,22 +89,26 @@ Cada passo termina com um critério de pronto. Só avance com ele verdadeiro.
 
 ### Passo 1 — Travar o ambiente
 
+**Status:** feito · **Evidência:** `evidence/passo_01/`
+
 **Aulas:** Cloud Data, FinOps.
 
-1. Ative a `.venv`, instale `requirements.txt`, copie `.env.example` para `.env`, coloque a chave em `credentials/`.
-2. Rode `python test_gcp_connection.py` e guarde a saída em `evidence/`.
+1. [x] Ative a `.venv`, instale `requirements.txt`, copie `.env.example` para `.env`, coloque a chave em `credentials/`.
+2. [x] Rode `python test_gcp_connection.py` e guarde a saída em `evidence/passo_01/`.
 3. No console GCP, confirme:
-   - bucket na região `us-central1`
-   - tópico `alfabetizacao-stream-topic`
-   - subscription (pull) ligada a esse tópico, com retenção curta
-   - orçamento com alerta em R$ 1,00
-4. Ajuste o teste de Pub/Sub para falhar se `get_topic` não achar o tópico.
+   - [x] bucket na região `us-central1` (print do teste)
+   - [x] tópico `alfabetizacao-stream-topic` (`get_topic` OK)
+   - [x] subscription (pull) ligada a esse tópico (`pubsub-subscription.png` — Pull, retenção 7 dias)
+   - [x] orçamento com alerta em R$ 1,00 (`billing-alertas-1-real.png`)
+4. [x] Ajuste o teste de Pub/Sub para falhar se `get_topic` não achar o tópico.
 
-**Pronto quando:** Storage, BigQuery (5 linhas do `dicionario`) e o tópico real respondem, e o print está em `evidence/`.
+**Pronto quando:** Storage, BigQuery (5 linhas do `dicionario`) e o tópico real respondem, e o print está em `evidence/passo_01/`. ✅
 
 ---
 
 ### Passo 2 — Entender as 6 entidades (Data Understanding)
+
+**Status:** feito · **Evidência:** `evidence/passo_02/` · **Contrato:** `docs/contrato_dados.md`
 
 **Aulas:** Capítulo Data Prepare, SQL relacional, agregações.
 
@@ -112,21 +124,23 @@ Dataset: `basedosdados.br_inep_avaliacao_alfabetizacao`.
 | Meta município | `meta_alfabetizacao_municipio` |
 | Tradução de códigos | `dicionario` (apoio; não substitui nenhuma das seis) |
 
-Faça em `sql/00_perfil.sql` (e salve o resultado em `evidence/perfil/`):
+Faça em `sql/00_perfil.sql` (e salve o resultado em `evidence/passo_02/`):
 
-1. `SELECT` com limite e a lista de colunas de cada tabela. Anote o nome real de ano, UF, município, rede, série, taxa, proficiência, presença e peso. Não chute o nome da coluna.
-2. Conte linhas, anos distintos, nulos nas chaves e códigos que não existem no `dicionario`.
-3. Confira a meta pactuada: rede pública, `meta_alfabetizacao_2030` = **80**. Universalização é outro número e entra no relatório como cenário, com outro nome de coluna.
-4. Escreva em `docs/contrato_dados.md` (curto):
+1. [x] `SELECT` com limite e a lista de colunas de cada tabela. Anote o nome real de ano, UF, município, rede, série, taxa, proficiência, presença e peso. Não chute o nome da coluna.
+2. [x] Conte linhas, anos distintos, nulos nas chaves e códigos que não existem no `dicionario`.
+3. [x] Confira a meta pactuada: rede pública, `meta_alfabetizacao_2030` = **80**. Universalização é outro número e entra no relatório como cenário, com outro nome de coluna.
+4. [x] Escreva em `docs/contrato_dados.md` (curto):
    - grain de cada tabela (o que é uma linha)
    - chaves de join, com o tipo de cada lado
-   - uma anomalia real encontrada (vira diferencial e limitação do README)
+   - uma anomalia real encontrada (vira diferencial e limitação do README) — encoding de `rede` código vs rótulo
 
-**Pronto quando:** as seis tabelas têm grain, chave e uma anomalia anotada, e nenhuma coluna do contrato foi inventada.
+**Pronto quando:** as seis tabelas têm grain, chave e uma anomalia anotada, e nenhuma coluna do contrato foi inventada. ✅
 
 ---
 
 ### Passo 3 — Bronze (raw, com histórico)
+
+**Status:** pendente · **Evidência:** `evidence/passo_03/`
 
 **Aulas:** Lake vs Warehouse, Medalhão (carga Bronze), ETL/ELT (extração completa).
 
@@ -145,13 +159,15 @@ gs://<bucket>/bronze/<entidade>/ingestion_date=YYYY-MM-DD/run_id=<id>/part-*.par
 4. Colunas técnicas permitidas na Bronze (não são regra de negócio): `ingestion_ts`, `run_id`, `source_table`.
 5. Registrar no BigQuery uma external table ou uma tabela nativa espelhada, dataset `alfabetizacao_bronze`, para a Silver consultar SQL sem baixar o Parquet no pandas.
 
-Evidência: job id do BigQuery, contagem de linhas por entidade, caminho do objeto. Grave em `evidence/bronze/`.
+Evidência: job id do BigQuery, contagem de linhas por entidade, caminho do objeto. Grave em `evidence/passo_03/`.
 
 **Pronto quando:** uma segunda execução deixa a primeira intacta no bucket e as seis entidades aparecem com contagem > 0.
 
 ---
 
 ### Passo 4 — Regras de qualidade (antes de publicar a camada seguinte)
+
+**Status:** pendente · **Evidência:** `evidence/passo_04/`
 
 **Aulas:** Data Mesh (governança no código), ETL (falha de extração degrada o modelo).
 
@@ -173,7 +189,7 @@ Mínimo bloqueante:
 
 Persistir cada resultado em `alfabetizacao_ops.quality_checks` com `append` (`run_id`, regra, camada, status, valor, limiar, `checked_at`). Log de terminal não conta.
 
-Prova obrigatória: `quality/prove_failure.py` injeta uma linha duplicada ou uma chave órfã, a regra bloqueante dispara, a Silver/Gold **não** é publicada, e o registro da falha fica na tabela de checks. Salve stdout + a linha da tabela em `evidence/quality/`.
+Prova obrigatória: `quality/prove_failure.py` injeta uma linha duplicada ou uma chave órfã, a regra bloqueante dispara, a Silver/Gold **não** é publicada, e o registro da falha fica na tabela de checks. Salve stdout + a linha da tabela em `evidence/passo_04/`.
 
 `except` que só imprime e devolve sucesso anula o critério.
 
@@ -182,6 +198,9 @@ Prova obrigatória: `quality/prove_failure.py` injeta uma linha duplicada ou uma
 ---
 
 ### Passo 5 — Silver (limpar, tipar, juntar)
+
+**Status:** pendente · **Evidência:** `evidence/passo_05/`
+
 
 **Aulas:** Medalhão (carga Silver), SQL (chaves, `NULL`, CTE), otimização (partição).
 
@@ -216,6 +235,9 @@ Dataset de saída: `alfabetizacao_silver`, tabelas particionadas por ano.
 
 ### Passo 6 — Gold (produto analítico)
 
+**Status:** pendente · **Evidência:** `evidence/passo_06/`
+
+
 **Aulas:** Medalhão (carga Gold), agregações/CTE/window, Data Mesh, otimização.
 
 Script: `gold/build.py` + `sql/03_gold.sql`. Dataset `alfabetizacao_gold`.
@@ -246,6 +268,9 @@ Partição por `ano`. Cluster por `id_municipio` ou `sigla_uf`, conforme o grain
 ---
 
 ### Passo 7 — Streaming simulado
+
+**Status:** pendente · **Evidência:** `evidence/passo_07/`
+
 
 **Aulas:** Kafka (produtor, tópico, consumidor, duplicata, tempo), NoSQL documento, ETL incremental, Lambda.
 
@@ -278,6 +303,9 @@ No README, três linhas comparando com o batch: latência (segundos vs carga do 
 
 ### Passo 8 — Observabilidade
 
+**Status:** pendente · **Evidência:** `evidence/passo_08/`
+
+
 **Aulas:** FinOps (operar), Kafka (lag), Data Mesh (checagem na publicação).
 
 Tabela `alfabetizacao_ops.pipeline_runs`, sempre `append`:
@@ -299,15 +327,17 @@ Alerta que alguém receberia em produção:
 
 Latência de streaming persiste na mesma tabela de runs ou em `stream_latency` (mínimo, máximo, média do lote).
 
-**Pronto quando:** duas runs seguidas aparecem como duas linhas (a segunda não apagou a primeira) e uma falha gerou registro + mensagem de alerta, com print em `evidence/ops/`.
+**Pronto quando:** duas runs seguidas aparecem como duas linhas (a segunda não apagou a primeira) e uma falha gerou registro + mensagem de alerta, com print em `evidence/passo_08/`.
 
 ---
 
 ### Passo 9 — FinOps com número medido
 
+**Status:** pendente · **Evidência:** `evidence/passo_09/`
+
 **Aula:** FinOps. Apoio: otimização de SQL e Cloud Data.
 
-Script: `ops/finops_snapshot.py`. Lê tamanho dos objetos no bucket, `total_bytes_processed` dos jobs e duração em `pipeline_runs`. Escreve `evidence/finops/custo.md`.
+Script: `ops/finops_snapshot.py`. Lê tamanho dos objetos no bucket, `total_bytes_processed` dos jobs e duração em `pipeline_runs`. Escreve `evidence/passo_09/custo.md`.
 
 Tabela que entra no README (preços públicos GCP na região usada; cite a data da consulta):
 
@@ -328,6 +358,9 @@ Decisões que a aula pede para aparecer no texto: Parquet comprimido, partição
 
 ### Passo 10 — README, evidências e clone limpo
 
+**Status:** pendente · **Evidência:** `evidence/passo_10/`
+
+
 **Aulas:** todas as decisões acima viram a seção Decisões.
 
 O README da raiz já cobre setup. Complete as seções que a banca lê:
@@ -345,7 +378,8 @@ Organização que o avaliador precisa achar:
 
 ```text
 bronze/  silver/  gold/  quality/  streaming/  ops/  sql/
-evidence/   # prints, job ids, contagens, falha provocada, finops
+evidence/
+  passo_01/ … passo_11/   # prints, job ids, contagens, falha, finops (por passo)
 ```
 
 Teste de reprodutibilidade: outro diretório, clone, `.env` novo, chave, `pip install -r requirements.txt`, comandos do README até a Gold. Ajuste o README até esse caminho funcionar. Versões no `requirements.txt` com pin (`==`), não só `>=`, antes da entrega.
@@ -357,6 +391,8 @@ Nenhuma chave no Git. Confira `git status` em `credentials/` e `.env`.
 ---
 
 ### Passo 11 — Vídeo (≤ 5 min)
+
+**Status:** pendente · **Evidência:** `evidence/passo_11/`
 
 Roteiro, nesta ordem:
 

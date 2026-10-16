@@ -39,11 +39,12 @@ try:
 except Exception as e:
     print(f"[ERRO] BigQuery: {e}")
 
-# 3. Pub/Sub
+# 3. Pub/Sub — get_topic falha se o tópico não existir de verdade
 try:
     publisher = pubsub_v1.PublisherClient()
     topic_path = publisher.topic_path(project_id, "alfabetizacao-stream-topic")
-    print(f"\n[OK] Pub/Sub: Tópico '{topic_path}' validado com sucesso.")
+    topic = publisher.get_topic(request={"topic": topic_path})
+    print(f"\n[OK] Pub/Sub: Tópico '{topic.name}' existe e respondeu ao get_topic.")
 except Exception as e:
     print(f"[ERRO] Pub/Sub: {e}")
 

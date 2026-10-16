@@ -133,7 +133,8 @@ tc-postech-fiap/
 ├── test_gcp_connection.py
 ├── docs/                        # aulas + passo a passo do challenge
 ├── bronze/  silver/  gold/      # pipelines (Medalhão)
-├── quality/ streaming/ evidence/
+├── quality/ streaming/
+├── evidence/                    # evidências por passo (passo_01 … passo_11)
 ```
 
 ---
