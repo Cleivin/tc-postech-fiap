@@ -1,0 +1,17 @@
+﻿run_id,layer,entity,rule,class,status,value,threshold,detail,checked_at
+20d3623d0430,silver,municipio_com_meta,join_match,blocking,pass,0.9777900146842878,0.95,linhas_esquerda=10896; linhas_com_par=10654,2026-10-18T18:29:36.291061+00:00
+20d3623d0430,silver,uf_com_meta,join_match,blocking,pass,1.0,0.95,linhas_esquerda=49; linhas_com_par=49,2026-10-18T18:29:37.146916+00:00
+20d3623d0430,silver,brasil_com_meta,join_match,blocking,pass,1.0,0.95,linhas_esquerda=2; linhas_com_par=2,2026-10-18T18:29:38.069366+00:00
+20d3623d0430,silver,dicionario,row_count,informative,pass,27.0,1.0,linhas na tabela silver,2026-10-18T18:29:38.850613+00:00
+20d3623d0430,silver,alunos,row_count,informative,pass,3867999.0,1.0,linhas na tabela silver,2026-10-18T18:29:39.653074+00:00
+20d3623d0430,silver,municipio,row_count,informative,pass,23995.0,1.0,linhas na tabela silver,2026-10-18T18:29:40.453590+00:00
+20d3623d0430,silver,uf,row_count,informative,pass,145.0,1.0,linhas na tabela silver,2026-10-18T18:29:41.225082+00:00
+20d3623d0430,silver,meta_alfabetizacao_municipio,row_count,informative,pass,10704.0,1.0,linhas na tabela silver,2026-10-18T18:29:42.062329+00:00
+20d3623d0430,silver,meta_alfabetizacao_uf,row_count,informative,pass,81.0,1.0,linhas na tabela silver,2026-10-18T18:29:42.876104+00:00
+20d3623d0430,silver,meta_alfabetizacao_brasil,row_count,informative,pass,3.0,1.0,linhas na tabela silver,2026-10-18T18:29:43.753227+00:00
+20d3623d0430,silver,municipio_com_meta,row_count,informative,pass,10896.0,1.0,linhas na tabela silver,2026-10-18T18:29:44.542521+00:00
+20d3623d0430,silver,uf_com_meta,row_count,informative,pass,49.0,1.0,linhas na tabela silver,2026-10-18T18:29:45.376957+00:00
+20d3623d0430,silver,brasil_com_meta,row_count,informative,pass,2.0,1.0,linhas na tabela silver,2026-10-18T18:29:46.112279+00:00
+20d3623d0430,silver,alunos,desconhecido_count,informative,pass,0.0,0.0,"colunas=rede_label,serie_label,presenca_label,alfabetizado_label",2026-10-18T18:29:46.966728+00:00
+20d3623d0430,silver,municipio,desconhecido_count,informative,pass,0.0,0.0,"colunas=rede_label,serie_label",2026-10-18T18:29:47.695737+00:00
+20d3623d0430,silver,uf,desconhecido_count,informative,pass,0.0,0.0,"colunas=rede_label,serie_label",2026-10-18T18:29:48.542638+00:00

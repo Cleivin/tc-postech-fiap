@@ -1,0 +1,3 @@
+check,status,expected,observed,detail
+CE_2024_rede5,pass,85.31,85.31,tol=0.05
+brasil_2024_meta,pass,59.2,59.2,meta_obs=80.0 meta_exp=80.0 status=nao_atingiu

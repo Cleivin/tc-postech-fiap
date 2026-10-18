@@ -242,3 +242,154 @@ meta_municipio  [Municipal]
 2023       RR PÃºblica                 NaN                      NaN                      NaN
 2024       RR PÃºblica                 NaN                      NaN                      NaN
 ```
+
+# Exploração BigQuery — passo 2 (extra)
+
+## 06_distribuicao_rede_alunos
+- job_id: `6208127d-e63a-451a-97a8-f97e5e7e145d`
+- rows: 5
+- file: `evidence/passo_02/06_distribuicao_rede_alunos.csv`
+
+```
+ ano rede rede_rotulo  n_alunos  n_presentes  n_alfabetizados_presentes  taxa_alfabetizacao_simples_pct
+2023    2    Estadual    155140       131526                      80662                           61.33
+2023    3   Municipal   1592299      1371532                     796765                           58.09
+2024    2    Estadual    280258       241173                     150760                           62.51
+2024    3   Municipal   1840277      1611591                     956343                           59.34
+2024    4     Privada        25           24                         16                           66.67
+```
+
+## 06_taxa_uf_ranking
+- job_id: `b3bb5793-7aa3-487b-b4c1-2c7fa359faad`
+- rows: 25
+- file: `evidence/passo_02/06_taxa_uf_ranking.csv`
+
+```
+sigla_uf  taxa_2023  taxa_2024  delta_yoy
+      CE      84.46      85.31       0.85
+      GO      66.74      72.74       6.00
+      MG      59.81      72.07      12.26
+      ES      67.93      71.69       3.76
+      PR      73.12      70.42      -2.70
+      RO      64.60      62.62      -1.98
+      SC      61.38      62.02       0.64
+      PE      58.95      60.79       1.84
+      MT      55.03      60.59       5.56
+      PI      52.48      59.82       7.34
+      MA      56.43      59.64       3.21
+      SP      51.91      58.13       6.22
+      PB      51.12      55.96       4.84
+      MS      47.45      55.87       8.42
+      RJ      52.13      55.25       3.12
+      AC        NaN      51.38        NaN
+      TO      43.72      50.07       6.35
+      AM      52.20      49.17      -3.03
+      AL      43.88      48.63       4.75
+      PA      48.38      48.20      -0.18
+      AP      41.56      46.62       5.06
+      RS      63.43      44.67     -18.76
+      RN      37.24      39.29       2.05
+      SE      31.30      38.39       7.09
+      BA      36.78      35.96      -0.82
+```
+
+## 06_gap_meta_uf
+- job_id: `f09ae77b-fb1b-4065-8d7c-47db16c3f3f8`
+- rows: 81
+- file: `evidence/passo_02/06_gap_meta_uf.csv`
+
+```
+ ano sigla_uf    rede  taxa_alfabetizacao  meta_alfabetizacao_2030  gap_vs_meta_2030  percentual_participacao
+2023       AC Pública                 NaN                     80.0               NaN                      NaN
+2023       RR Pública                 NaN                      NaN               NaN                      NaN
+2023       DF Pública                 NaN                     80.0               NaN                      NaN
+2023       SE Pública               31.30                     80.0            -48.70                    88.34
+2023       BA Pública               36.80                     80.0            -43.20                    84.53
+2023       RN Pública               37.24                     80.0            -42.76                    78.55
+2023       AP Pública               41.56                     80.0            -38.44                    89.68
+2023       TO Pública               43.72                     80.0            -36.28                    83.91
+2023       AL Pública               43.88                     80.0            -36.12                    92.36
+2023       MS Pública               47.45                     80.0            -32.55                    87.95
+2023       PA Pública               48.40                     80.0            -31.60                    80.55
+2023       PB Pública               51.12                     80.0            -28.88                    88.22
+2023       SP Pública               51.91                     80.0            -28.09                    88.75
+2023       RJ Pública               52.13                     80.0            -27.87                    81.21
+2023       AM Pública               52.20                     80.0            -27.80                    76.14
+2023       PI Pública               52.48                     80.0            -27.52                    93.37
+2023       MT Pública               55.06                     80.0            -24.94                    87.47
+2023       MA Pública               56.43                     80.0            -23.57                    89.11
+2023       PE Pública               59.00                     80.0            -21.00                    91.93
+2023       MG Pública               59.81                     80.0            -20.19                    89.59
+2023       SC Pública               61.38                     80.0            -18.62                    78.60
+2023       RS Pública               63.40                     80.0            -16.60                    81.44
+2023       RO Pública               64.60                     80.0            -15.40                    88.10
+2023       GO Pública               66.70                     80.0            -13.30                    87.03
+2023       ES Pública               67.93                     80.0            -12.07                    88.40
+2023       PR Pública               73.12                     80.0             -6.88                    86.18
+2023       CE Pública               84.50                     80.0              4.50                    95.22
+2024       RR Pública                 NaN                      NaN               NaN                      NaN
+2024       BA Pública               35.96                     80.0            -44.04                    90.04
+2024       SE Pública               38.39                     80.0            -41.61                    92.84
+```
+
+## 06_presenca_vs_proficiencia
+- job_id: `2daa1cf8-01f1-4439-9990-d06926663206`
+- rows: 3
+- file: `evidence/passo_02/06_presenca_vs_proficiencia.csv`
+
+```
+presenca preenchimento_caderno       n  null_proficiencia  null_peso_aluno  com_proficiencia
+       0                     0  512153             512153           512153                 0
+       1                     0    1185               1185             1185                 0
+       1                     1 3354661                  0                0           3354661
+```
+
+## 06_cobertura_join_meta
+- job_id: `611cce4d-3e2e-4d7c-a5eb-90bbbdcf1a4a`
+- rows: 2
+- file: `evidence/passo_02/06_cobertura_join_meta.csv`
+
+```
+ ano  n_municipios_alunos  n_com_meta  n_sem_meta  cobertura_pct
+2023                 4873        4696         177          96.37
+2024                 5519        5352         167          96.97
+```
+
+## 06_consistencia_micro_vs_muni
+- job_id: `2884dd89-e207-45c1-8d68-3d310ed37a86`
+- rows: 40
+- file: `evidence/passo_02/06_consistencia_micro_vs_muni.csv`
+
+```
+ ano id_municipio rede  taxa_micro_ponderada  taxa_oficial_municipio  diff
+2023      1100080    3                 80.70                   80.68  0.02
+2023      1100130    3                 51.38                   51.40 -0.02
+2023      1100072    3                 58.19                   58.20 -0.01
+2023      1100098    3                 85.32                   85.33 -0.01
+2023      1100189    3                 69.72                   69.73 -0.01
+2023      1100015    3                 64.55                   64.55  0.00
+2023      1100023    3                 62.30                   62.30  0.00
+2023      1100031    3                 69.10                   69.10  0.00
+2023      1100049    3                 62.51                   62.51  0.00
+2023      1100056    3                 58.53                   58.53  0.00
+2023      1100064    3                 62.85                   62.85  0.00
+2023      1100106    3                 41.76                   41.76  0.00
+2023      1100114    3                 62.82                   62.82  0.00
+2023      1100122    3                 81.83                   81.83  0.00
+2023      1100148    3                 74.81                   74.81  0.00
+2023      1100155    3                 72.39                   72.39  0.00
+2023      1100205    3                 65.06                   65.06  0.00
+2023      1100254    3                 62.41                   62.41  0.00
+2023      1100262    3                 83.84                   83.84  0.00
+2023      1100288    3                 68.81                   68.81  0.00
+2024      1100049    3                 65.88                   65.81  0.07
+2024      1100064    3                 71.72                   71.69  0.03
+2024      1100031    3                 75.90                   75.88  0.02
+2024      1100114    3                 64.01                   63.99  0.02
+2024      1100015    3                 67.81                   67.79  0.02
+2024      1100130    3                 64.77                   64.75  0.02
+2024      1100072    3                 72.67                   72.68 -0.01
+2024      1100098    3                 71.17                   71.16  0.01
+2024      1100254    3                 71.13                   71.14 -0.01
+2024      1100080    3                 59.64                   59.63  0.01
+```

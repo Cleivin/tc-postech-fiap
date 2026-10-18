@@ -1,0 +1,6 @@
+step,label,total_bytes_processed,dry_run
+1,CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_gold.indicador_municipio`,3418524,True
+2,CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_gold.indicador_uf`,19519,True
+3,CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_gold.meta_vs_resultado`,1049767,True
+4,CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_gold.evolucao_temporal`,2343267,True
+5,CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_gold.validacao_microdado`,195491553,True

@@ -1,0 +1,25 @@
+﻿run_id,layer,entity,rule,class,status,value,threshold,detail,checked_at
+20d3623d0430,bronze,alunos,null_keys,blocking,pass,0.0,0.0,"chaves=ano,id_municipio,id_escola,id_aluno,serie,rede",2026-10-18T18:03:12.202099+00:00
+20d3623d0430,bronze,alunos,duplicate_keys,blocking,pass,0.0,0.0,"chaves=ano, id_municipio, id_escola, id_aluno, serie, rede",2026-10-18T18:03:13.617853+00:00
+20d3623d0430,bronze,alunos,orphan_codes,blocking,pass,0.0,0.0,"colunas=rede,serie limiar=0.0",2026-10-18T18:03:14.521387+00:00
+20d3623d0430,bronze,alunos,row_count,informative,pass,3867999.0,1.0,linhas na run,2026-10-18T18:03:15.396633+00:00
+20d3623d0430,bronze,municipio,null_keys,blocking,pass,0.0,0.0,"chaves=ano,id_municipio,serie,rede",2026-10-18T18:03:16.207007+00:00
+20d3623d0430,bronze,municipio,duplicate_keys,blocking,pass,0.0,0.0,"chaves=ano, id_municipio, serie, rede",2026-10-18T18:03:17.032223+00:00
+20d3623d0430,bronze,municipio,orphan_codes,blocking,pass,0.0,0.0,"colunas=rede,serie limiar=0.0",2026-10-18T18:03:17.931686+00:00
+20d3623d0430,bronze,municipio,row_count,informative,pass,23995.0,1.0,linhas na run,2026-10-18T18:03:18.787132+00:00
+20d3623d0430,bronze,uf,null_keys,blocking,pass,0.0,0.0,"chaves=ano,sigla_uf,serie,rede",2026-10-18T18:03:19.626974+00:00
+20d3623d0430,bronze,uf,duplicate_keys,blocking,pass,0.0,0.0,"chaves=ano, sigla_uf, serie, rede",2026-10-18T18:03:20.732125+00:00
+20d3623d0430,bronze,uf,orphan_codes,blocking,pass,0.0,0.0,"colunas=rede,serie limiar=0.0",2026-10-18T18:03:21.621638+00:00
+20d3623d0430,bronze,uf,row_count,informative,pass,145.0,1.0,linhas na run,2026-10-18T18:03:22.518458+00:00
+20d3623d0430,bronze,meta_alfabetizacao_brasil,null_keys,blocking,pass,0.0,0.0,"chaves=ano,rede",2026-10-18T18:03:23.399588+00:00
+20d3623d0430,bronze,meta_alfabetizacao_brasil,duplicate_keys,blocking,pass,0.0,0.0,"chaves=ano, rede",2026-10-18T18:03:24.232141+00:00
+20d3623d0430,bronze,meta_alfabetizacao_brasil,row_count,informative,pass,3.0,1.0,linhas na run,2026-10-18T18:03:25.142165+00:00
+20d3623d0430,bronze,meta_alfabetizacao_uf,null_keys,blocking,pass,0.0,0.0,"chaves=ano,sigla_uf,rede",2026-10-18T18:03:26.006456+00:00
+20d3623d0430,bronze,meta_alfabetizacao_uf,duplicate_keys,blocking,pass,0.0,0.0,"chaves=ano, sigla_uf, rede",2026-10-18T18:03:26.801449+00:00
+20d3623d0430,bronze,meta_alfabetizacao_uf,row_count,informative,pass,81.0,1.0,linhas na run,2026-10-18T18:03:27.874074+00:00
+20d3623d0430,bronze,meta_alfabetizacao_municipio,null_keys,blocking,pass,0.0,0.0,"chaves=ano,id_municipio,rede",2026-10-18T18:03:28.705959+00:00
+20d3623d0430,bronze,meta_alfabetizacao_municipio,duplicate_keys,blocking,pass,0.0,0.0,"chaves=ano, id_municipio, rede",2026-10-18T18:03:31.979170+00:00
+20d3623d0430,bronze,meta_alfabetizacao_municipio,row_count,informative,pass,10704.0,1.0,linhas na run,2026-10-18T18:03:32.786204+00:00
+20d3623d0430,bronze,dicionario,null_keys,blocking,pass,0.0,0.0,"chaves=id_tabela,nome_coluna,chave",2026-10-18T18:03:33.600633+00:00
+20d3623d0430,bronze,dicionario,duplicate_keys,blocking,pass,0.0,0.0,"chaves=id_tabela, nome_coluna, chave",2026-10-18T18:03:34.366635+00:00
+20d3623d0430,bronze,dicionario,row_count,informative,pass,27.0,1.0,linhas na run,2026-10-18T18:03:35.210151+00:00

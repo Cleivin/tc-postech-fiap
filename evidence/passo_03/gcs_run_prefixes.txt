@@ -1,0 +1,39 @@
+
+# after run_id=f92c40cfe9a7 ingestion_date=2026-10-18
+[alunos]
+  gs://tc-postech-fiap-datalake/bronze/alunos/ingestion_date=2026-10-18/run_id=f92c40cfe9a7/
+[municipio]
+  gs://tc-postech-fiap-datalake/bronze/municipio/ingestion_date=2026-10-18/run_id=f92c40cfe9a7/
+[uf]
+  gs://tc-postech-fiap-datalake/bronze/uf/ingestion_date=2026-10-18/run_id=f92c40cfe9a7/
+[meta_alfabetizacao_brasil]
+  gs://tc-postech-fiap-datalake/bronze/meta_alfabetizacao_brasil/ingestion_date=2026-10-18/run_id=f92c40cfe9a7/
+[meta_alfabetizacao_uf]
+  gs://tc-postech-fiap-datalake/bronze/meta_alfabetizacao_uf/ingestion_date=2026-10-18/run_id=f92c40cfe9a7/
+[meta_alfabetizacao_municipio]
+  gs://tc-postech-fiap-datalake/bronze/meta_alfabetizacao_municipio/ingestion_date=2026-10-18/run_id=f92c40cfe9a7/
+[dicionario]
+  gs://tc-postech-fiap-datalake/bronze/dicionario/ingestion_date=2026-10-18/run_id=f92c40cfe9a7/
+
+# after run_id=20d3623d0430 ingestion_date=2026-10-18
+[alunos]
+  gs://tc-postech-fiap-datalake/bronze/alunos/ingestion_date=2026-10-18/run_id=20d3623d0430/
+  gs://tc-postech-fiap-datalake/bronze/alunos/ingestion_date=2026-10-18/run_id=f92c40cfe9a7/
+[municipio]
+  gs://tc-postech-fiap-datalake/bronze/municipio/ingestion_date=2026-10-18/run_id=20d3623d0430/
+  gs://tc-postech-fiap-datalake/bronze/municipio/ingestion_date=2026-10-18/run_id=f92c40cfe9a7/
+[uf]
+  gs://tc-postech-fiap-datalake/bronze/uf/ingestion_date=2026-10-18/run_id=20d3623d0430/
+  gs://tc-postech-fiap-datalake/bronze/uf/ingestion_date=2026-10-18/run_id=f92c40cfe9a7/
+[meta_alfabetizacao_brasil]
+  gs://tc-postech-fiap-datalake/bronze/meta_alfabetizacao_brasil/ingestion_date=2026-10-18/run_id=20d3623d0430/
+  gs://tc-postech-fiap-datalake/bronze/meta_alfabetizacao_brasil/ingestion_date=2026-10-18/run_id=f92c40cfe9a7/
+[meta_alfabetizacao_uf]
+  gs://tc-postech-fiap-datalake/bronze/meta_alfabetizacao_uf/ingestion_date=2026-10-18/run_id=20d3623d0430/
+  gs://tc-postech-fiap-datalake/bronze/meta_alfabetizacao_uf/ingestion_date=2026-10-18/run_id=f92c40cfe9a7/
+[meta_alfabetizacao_municipio]
+  gs://tc-postech-fiap-datalake/bronze/meta_alfabetizacao_municipio/ingestion_date=2026-10-18/run_id=20d3623d0430/
+  gs://tc-postech-fiap-datalake/bronze/meta_alfabetizacao_municipio/ingestion_date=2026-10-18/run_id=f92c40cfe9a7/
+[dicionario]
+  gs://tc-postech-fiap-datalake/bronze/dicionario/ingestion_date=2026-10-18/run_id=20d3623d0430/
+  gs://tc-postech-fiap-datalake/bronze/dicionario/ingestion_date=2026-10-18/run_id=f92c40cfe9a7/

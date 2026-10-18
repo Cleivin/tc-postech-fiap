@@ -1,0 +1,107 @@
+============================================================
+OPS prove_observability | project=tc-postech-fiap
+silver_run_id=20d3623d0430
+alert_topic=projects/tc-postech-fiap/topics/alfabetizacao-alertas
+============================================================
+[INFO] executando silver/transform.py --run_id 20d3623d0430
+[OK] dataset alfabetizacao_silver ja existe
+============================================================
+SILVER transform | project=tc-postech-fiap run_id=20d3623d0430
+============================================================
+  [1/10] CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_silver.dicionario` AS...
+       job_id=f371183a-96df-49d2-8144-2189fccb3ef7
+  [2/10] CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_silver.alunos`...
+       job_id=3901f50c-dab3-429d-bb1d-7a14fbea0fcf
+  [3/10] CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_silver.municipio`...
+       job_id=ab16c53b-561b-4f01-8043-fede8531d910
+  [4/10] CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_silver.uf`...
+       job_id=97a8d24f-ac85-4a94-973a-f4565ff81415
+  [5/10] CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_silver.meta_alfabetizacao...
+       job_id=65fa30cc-1860-4d2c-aa29-84cc9ce60b44
+  [6/10] CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_silver.meta_alfabetizacao...
+       job_id=20edfd06-00ad-4780-977d-bd40fafbd94a
+  [7/10] CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_silver.meta_alfabetizacao...
+       job_id=67b03b1a-bdbd-4226-9bd8-d8d0a1018232
+  [8/10] CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_silver.municipio_com_meta...
+       job_id=621432de-a8b2-42d5-8629-83a7a1cab962
+  [9/10] CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_silver.uf_com_meta`...
+       job_id=2be679d5-71ef-4af5-904f-699ca08e320d
+  [10/10] CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_silver.brasil_com_meta`...
+       job_id=f8972e50-1282-44b9-88b5-6d8d24cd4d8b
+  rows dicionario: 27
+  rows alunos: 3867999
+  rows municipio: 23995
+  rows uf: 145
+  rows meta_alfabetizacao_municipio: 10704
+  rows meta_alfabetizacao_uf: 81
+  rows meta_alfabetizacao_brasil: 3
+  rows municipio_com_meta: 10896
+  rows uf_com_meta: 49
+  rows brasil_com_meta: 2
+join_match + quality_checks...
+  [OK] municipio_com_meta.join_match value=0.977790 threshold=0.95
+  [OK] uf_com_meta.join_match value=1.000000 threshold=0.95
+  [OK] brasil_com_meta.join_match value=1.000000 threshold=0.95
+  [info] alunos.desconhecido_count value=0.0 status=pass
+  [info] municipio.desconhecido_count value=0.0 status=pass
+  [info] uf.desconhecido_count value=0.0 status=pass
+============================================================
+evidencia: evidence/passo_05/ (run_id=20d3623d0430)
+[OK] Silver OK (exit 0)
+[OK] pipeline_runs append etapa=silver run_id=20d3623d0430 status=success duration_s=58.085
+[INFO] silver exit=0
+[INFO] executando silver/transform.py --run_id 20d3623d0430
+[OK] dataset alfabetizacao_silver ja existe
+============================================================
+SILVER transform | project=tc-postech-fiap run_id=20d3623d0430
+============================================================
+  [1/10] CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_silver.dicionario` AS...
+       job_id=f13187c0-e947-4eb0-96bf-119385ed91d1
+  [2/10] CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_silver.alunos`...
+       job_id=a9c21f8d-d8b3-4a83-9055-60e9f639d5f4
+  [3/10] CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_silver.municipio`...
+       job_id=67b95987-fa39-461a-b64b-e735a2eb2f9d
+  [4/10] CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_silver.uf`...
+       job_id=6934ddd5-52f0-4b52-a183-cb4c7a86d1a7
+  [5/10] CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_silver.meta_alfabetizacao...
+       job_id=9335e2a4-89b5-4f16-9c7f-0fb1cb5fefbf
+  [6/10] CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_silver.meta_alfabetizacao...
+       job_id=0c63e4cb-66c0-49a5-b13c-b74443cf7c24
+  [7/10] CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_silver.meta_alfabetizacao...
+       job_id=dab12181-71dd-454d-b9e3-ff5b3e44be1a
+  [8/10] CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_silver.municipio_com_meta...
+       job_id=fae6a02a-977e-414a-9744-2f3ca3d25dfd
+  [9/10] CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_silver.uf_com_meta`...
+       job_id=a5ee849d-ed71-40d3-812d-1d852a398bfa
+  [10/10] CREATE OR REPLACE TABLE `tc-postech-fiap.alfabetizacao_silver.brasil_com_meta`...
+       job_id=db512d28-e04f-43d4-8990-4da18ca23170
+  rows dicionario: 27
+  rows alunos: 3867999
+  rows municipio: 23995
+  rows uf: 145
+  rows meta_alfabetizacao_municipio: 10704
+  rows meta_alfabetizacao_uf: 81
+  rows meta_alfabetizacao_brasil: 3
+  rows municipio_com_meta: 10896
+  rows uf_com_meta: 49
+  rows brasil_com_meta: 2
+join_match + quality_checks...
+  [OK] municipio_com_meta.join_match value=0.977790 threshold=0.95
+  [OK] uf_com_meta.join_match value=1.000000 threshold=0.95
+  [OK] brasil_com_meta.join_match value=1.000000 threshold=0.95
+  [info] alunos.desconhecido_count value=0.0 status=pass
+  [info] municipio.desconhecido_count value=0.0 status=pass
+  [info] uf.desconhecido_count value=0.0 status=pass
+============================================================
+evidencia: evidence/passo_05/ (run_id=20d3623d0430)
+[OK] Silver OK (exit 0)
+[OK] pipeline_runs append etapa=silver run_id=20d3623d0430 status=success duration_s=56.157
+[INFO] silver exit=0
+[OK] success silver rows fetched: 2
+  #1 run_id=20d3623d0430 finished_at=2026-10-18T19:54:39.694763+00:00 duration_s=56.15711
+  #2 run_id=20d3623d0430 finished_at=2026-10-18T19:53:40.123117+00:00 duration_s=58.084958
+[OK] pipeline_runs append etapa=silver run_id=prove_fail_81ee7cf0f8ea status=failed duration_s=0.568
+[OK] alerta publicado topic=alfabetizacao-alertas message_id=22579172021738768
+[OK] failed row run_id=prove_fail_81ee7cf0f8ea
+[OK] alert message_id=22579172021738768
+[ERRO] prove_observability concluiu com falha esperada (exit 1)

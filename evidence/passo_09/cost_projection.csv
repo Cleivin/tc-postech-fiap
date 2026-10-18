@@ -1,0 +1,5 @@
+﻿servico,unidade,quantidade_medida,preco_unitario_usd,custo_mensal_projetado_usd,como_mediu,premissa_cadencia,always_free
+Cloud Storage,GiB-mes,0.19231,0.02,0.0,soma size dos objetos via Storage API (list_blobs),estoque atual do lake (nao escala com cadencia),primeiros 5.0 GiB-mes free (us-central1)
+BigQuery,TiB processados/mes,0.020743,6.25,0.0,soma bronze+silver+gold = 760231654 B/batch (pipeline_runs e/ou evidence; dry_run Gold transform=202322630 B),30 batch/mes (≈1/dia),primeiros 1.0 TiB/mes de query free
+Pub/Sub,GiB mensagens/mes,0.013405,40.0,0.0,payload medio demo n=20 = 239.9 B; throughput≈2× (publish+subscribe),1000 eventos/dia × 30 dias,primeiros 10.0 GiB/mes free
+Computacao do job,segundos (serverless),56.157,0.0,0.0,duracao medida 1 batch (bronze+silver+gold)=56.2s; 1 lote stream=0.0s; sem GCE/GKE — custo embutido no BQ on-demand e Pub/Sub,30 batch/mes + consumer sob demanda (sem cluster Kafka/Spark ligado 24/7),N/A — custo coberto nas linhas BQ/Pub/Sub

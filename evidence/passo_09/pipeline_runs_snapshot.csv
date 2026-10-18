@@ -1,0 +1,4 @@
+﻿run_id,etapa,started_at,finished_at,duration_seconds,rows_in,rows_out,status,bytes_processed,latency_min_s,latency_max_s,latency_avg_s,detail
+prove_fail_81ee7cf0f8ea,silver,2026-10-18T19:54:43.040914+00:00,2026-10-18T19:54:43.609146+00:00,0.568232,0,0,failed,0,,,,falha bloqueante simulada (Passo 8): quality blocking / join_match — Silver/Gold nao publicaveis
+20d3623d0430,silver,2026-10-18T19:53:43.537653+00:00,2026-10-18T19:54:39.694763+00:00,56.15711,3913901,3913901,success,276408457,,,,
+20d3623d0430,silver,2026-10-18T19:52:42.038159+00:00,2026-10-18T19:53:40.123117+00:00,58.084958,3913901,3913901,success,276408457,,,,

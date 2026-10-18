@@ -1,0 +1,1 @@
+gs://tc-postech-fiap-datalake/bronze/stream_quarentena/8c568c23-6384-49ec-8e43-a0f5edce8887_d59e9e76.json

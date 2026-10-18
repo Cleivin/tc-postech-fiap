@@ -1,0 +1,2 @@
+﻿run_id,layer,entity,rule,class,status,value,threshold,detail,checked_at
+prove_0c6d9f10ea09,fixture,uf,duplicate_keys,blocking,fail,1.0,0.0,"fixture=fixture_dup_keys; source_run=20d3623d0430; chaves=ano, sigla_uf, serie, rede",2026-10-18T18:03:51.394499+00:00

@@ -16,6 +16,7 @@ O README da raiz e o `.env.example` já fecharam a arquitetura. Os passos abaixo
 | Projeto | `GCP_PROJECT_ID` (exemplo: `tc-postech-fiap`) |
 | Lake | Bucket `GCP_BUCKET_NAME`, Parquet particionado |
 | Warehouse | BigQuery, SQL nas camadas Silver e Gold |
+| Datasets BQ | **`alfabetizacao_<camada>`** — `alfabetizacao_bronze`, `alfabetizacao_silver`, `alfabetizacao_gold`, `alfabetizacao_ops`. Proibido o invertido (`bronze_alfabetizacao`, etc.). Paths GCS (`bronze/`, `silver/`, `gold/`) são pasta do lake, não nome de dataset |
 | Fonte | Dataset público `basedosdados.br_inep_avaliacao_alfabetizacao` |
 | Padrão de carga | **ELT**: extrair e gravar cru; transformar no BigQuery |
 | Streaming | Pub/Sub, tópico `alfabetizacao-stream-topic` (o papel do Kafka da aula) |
@@ -38,9 +39,16 @@ Motivo de cada escolha (vai para a seção Decisões do README):
 | `test_gcp_connection.py` | Pronto (Storage + BigQuery + Pub/Sub `get_topic`) |
 | README de setup (venv, chave, teste) | Pronto |
 | `sql/00_perfil.sql`, `docs/contrato_dados.md` | Pronto (passo 2) |
-| Evidências em `evidence/passo_01/` e `evidence/passo_02/` | Pronto |
-| Pastas `bronze/`, `silver/`, `gold/`, `quality/`, `streaming/` | Estrutura vazia — passos 3+ |
-| Pipeline, métricas, tabela FinOps, vídeo | Ainda não existem |
+| `bronze/ingest_batch.py`, dataset `alfabetizacao_bronze` | Pronto (passo 3) |
+| `quality/validate.py`, `quality/prove_failure.py`, `alfabetizacao_ops.quality_checks` | Pronto (passo 4) |
+| `silver/transform.py`, `sql/02_silver.sql`, dataset `alfabetizacao_silver` | Pronto (passo 5) |
+| `gold/build.py`, `sql/03_gold.sql`, dataset `alfabetizacao_gold` | Pronto (passo 6) |
+| `streaming/producer.py`, `streaming/consumer.py`, `eventos_stream` | Pronto (passo 7) |
+| `ops/telemetry.py`, `ops/prove_observability.py`, `pipeline_runs` + alerta | Pronto (passo 8) |
+| `ops/finops_snapshot.py`, `evidence/passo_09/custo.md` | Pronto (passo 9) |
+| README da raiz, `requirements.txt` com pin, `evidence/passo_10/` | Pronto (passo 10) |
+| Evidências em `evidence/passo_01/` … `passo_10/` | Pronto |
+| Vídeo | Ainda não (passo 11) |
 
 Credencial fica em `credentials/gcp-sa-key.json`. Ela não sobe no Git.
 
@@ -50,7 +58,15 @@ Credencial fica em `credentials/gcp-sa-key.json`. Ela não sobe no Git.
 |-------|--------|-----------|
 | 1 Ambiente | **Feito** | `evidence/passo_01/` |
 | 2 Perfil / contrato | **Feito** | `evidence/passo_02/` + `docs/contrato_dados.md` |
-| 3–11 | Pendente | pastas vazias em `evidence/passo_XX/` |
+| 3 Bronze | **Feito** | `evidence/passo_03/` |
+| 4 Qualidade Bronze | **Feito** | `evidence/passo_04/` |
+| 5 Silver | **Feito** | `evidence/passo_05/` |
+| 6 Gold | **Feito** | `evidence/passo_06/` |
+| 7 Streaming | **Feito** | `evidence/passo_07/` |
+| 8 Observabilidade | **Feito** | `evidence/passo_08/` |
+| 9 FinOps | **Feito** | `evidence/passo_09/` |
+| 10 README / clone | **Feito** | `evidence/passo_10/` + README da raiz |
+| 11 Vídeo | Pendente | ainda não gravado |
 
 ---
 
@@ -133,6 +149,7 @@ Faça em `sql/00_perfil.sql` (e salve o resultado em `evidence/passo_02/`):
    - grain de cada tabela (o que é uma linha)
    - chaves de join, com o tipo de cada lado
    - uma anomalia real encontrada (vira diferencial e limitação do README) — encoding de `rede` código vs rótulo
+5. [x] Exploração extra em `sql/01_exploracao.sql` (runner `sql/run_exploracao.py`): distribuição por rede, ranking/gap de UF, presença×proficiência, cobertura do join com meta e consistência micro→município. CSVs `06_*` em `evidence/passo_02/`.
 
 **Pronto quando:** as seis tabelas têm grain, chave e uma anomalia anotada, e nenhuma coluna do contrato foi inventada. ✅
 
@@ -140,7 +157,7 @@ Faça em `sql/00_perfil.sql` (e salve o resultado em `evidence/passo_02/`):
 
 ### Passo 3 — Bronze (raw, com histórico)
 
-**Status:** pendente · **Evidência:** `evidence/passo_03/`
+**Status:** feito · **Evidência:** `evidence/passo_03/`
 
 **Aulas:** Lake vs Warehouse, Medalhão (carga Bronze), ETL/ELT (extração completa).
 
@@ -148,30 +165,30 @@ Script: `bronze/ingest_batch.py`.
 
 Para cada uma das 6 tabelas + `dicionario`:
 
-1. Ler do BigQuery público **só as colunas que o contrato listou** (aula de otimização: não usar `SELECT *`).
-2. Gravar Parquet no GCS, sem alterar valor de negócio:
+1. [x] Ler do BigQuery público **só as colunas que o contrato listou** (aula de otimização: não usar `SELECT *`).
+2. [x] Gravar Parquet no GCS, sem alterar valor de negócio:
 
 ```text
 gs://<bucket>/bronze/<entidade>/ingestion_date=YYYY-MM-DD/run_id=<id>/part-*.parquet
 ```
 
-3. Modo de escrita: **append de uma partição nova**. Uma run nova cria outro `run_id`. Não use overwrite do prefixo `bronze/<entidade>/`, nem `WRITE_TRUNCATE` da tabela inteira.
-4. Colunas técnicas permitidas na Bronze (não são regra de negócio): `ingestion_ts`, `run_id`, `source_table`.
-5. Registrar no BigQuery uma external table ou uma tabela nativa espelhada, dataset `alfabetizacao_bronze`, para a Silver consultar SQL sem baixar o Parquet no pandas.
+3. [x] Modo de escrita: **append de uma partição nova**. Uma run nova cria outro `run_id`. Não use overwrite do prefixo `bronze/<entidade>/`, nem `WRITE_TRUNCATE` da tabela inteira.
+4. [x] Colunas técnicas permitidas na Bronze (não são regra de negócio): `ingestion_ts`, `run_id`, `source_table` (`ingestion_ts`/`source_table` no Parquet; `ingestion_date`/`run_id` como partições Hive da external table).
+5. [x] Registrar no BigQuery external tables Hive, dataset `alfabetizacao_bronze`, para a Silver consultar SQL sem baixar o Parquet no pandas.
 
 Evidência: job id do BigQuery, contagem de linhas por entidade, caminho do objeto. Grave em `evidence/passo_03/`.
 
-**Pronto quando:** uma segunda execução deixa a primeira intacta no bucket e as seis entidades aparecem com contagem > 0.
+**Pronto quando:** uma segunda execução deixa a primeira intacta no bucket e as seis entidades aparecem com contagem > 0. ✅ (runs `f92c40cfe9a7` e `20d3623d0430`)
 
 ---
 
 ### Passo 4 — Regras de qualidade (antes de publicar a camada seguinte)
 
-**Status:** pendente · **Evidência:** `evidence/passo_04/`
+**Status:** feito · **Evidência:** `evidence/passo_04/`
 
 **Aulas:** Data Mesh (governança no código), ETL (falha de extração degrada o modelo).
 
-Pacote: `quality/`.
+Pacote: `quality/` — neste passo, **somente Bronze** (`python quality/validate.py --layer bronze`). Taxa de match do join fica para o Passo 5.
 
 Duas classes de regra:
 
@@ -180,63 +197,61 @@ Duas classes de regra:
 | Bloqueante | O script sai com código ≠ 0 e **não grava** a camada seguinte |
 | Informativa | Grava o resultado e segue |
 
-Mínimo bloqueante:
+Mínimo bloqueante (Bronze):
 
-- chave nula
-- duplicata da chave da entidade
-- código de rede ou série ausente no `dicionario` acima de um limite que você justificar (0 é um bom começo para código obrigatório)
-- taxa de match do join abaixo do limiar (passo 5)
+- [x] chave nula (`null_keys`)
+- [x] duplicata da chave da entidade (`duplicate_keys`)
+- [x] código de rede ou série ausente no `dicionario` — limiar **0** (justificado no contrato; perfil Passo 2)
+- taxa de match do join abaixo do limiar → **Passo 5** (fora deste passo)
 
-Persistir cada resultado em `alfabetizacao_ops.quality_checks` com `append` (`run_id`, regra, camada, status, valor, limiar, `checked_at`). Log de terminal não conta.
+Persistir cada resultado em `alfabetizacao_ops.quality_checks` com `append` (`run_id`, regra, camada, status, valor, limiar, `checked_at`). Log de terminal não conta. [x]
 
-Prova obrigatória: `quality/prove_failure.py` injeta uma linha duplicada ou uma chave órfã, a regra bloqueante dispara, a Silver/Gold **não** é publicada, e o registro da falha fica na tabela de checks. Salve stdout + a linha da tabela em `evidence/passo_04/`.
+Prova obrigatória: `quality/prove_failure.py` injeta uma linha duplicada (fixture `alfabetizacao_ops.fixture_dup_keys`, sem alterar o lake GCS), a regra bloqueante dispara, e o registro da falha fica na tabela de checks. Salve stdout + a linha da tabela em `evidence/passo_04/`. [x]
 
 `except` que só imprime e devolve sucesso anula o critério.
 
-**Pronto quando:** existe uma execução que falha de propósito, com evidência, e outra execução limpa que passa.
+**Pronto quando:** existe uma execução que falha de propósito, com evidência, e outra execução limpa que passa. ✅ (`validate` exit 0 em `run_id=20d3623d0430`; `prove_failure` exit 1)
 
 ---
 
 ### Passo 5 — Silver (limpar, tipar, juntar)
 
-**Status:** pendente · **Evidência:** `evidence/passo_05/`
-
+**Status:** feito · **Evidência:** `evidence/passo_05/`
 
 **Aulas:** Medalhão (carga Silver), SQL (chaves, `NULL`, CTE), otimização (partição).
 
 Script: `silver/transform.py` + `sql/02_silver.sql`.
 
-1. Ler a Bronze da **última** `ingestion_date`/`run_id` (ou a que o parâmetro mandar).
-2. Padronizar nomes e tipos. Traduzir códigos com join no `dicionario`. Código sem tradução vira a categoria `desconhecido`, e a contagem dessa categoria entra na qualidade.
-3. Normalizar a chave dos dois lados do join (mesmo tipo: string com string, inteiro com inteiro) **antes** do `JOIN`.
-4. Depois de **cada** join, calcular:
+1. [x] Ler a Bronze da **última** `ingestion_date`/`run_id` (ou a que o parâmetro mandar).
+2. [x] Padronizar nomes e tipos. Traduzir códigos com join no `dicionario`. Código sem tradução vira a categoria `desconhecido`, e a contagem dessa categoria entra na qualidade.
+3. [x] Normalizar a chave dos dois lados do join (mesmo tipo: string com string, inteiro com inteiro) **antes** do `JOIN`. De-para `rede`: `3`↔`Municipal`, `5`↔`Pública` (contrato).
+4. [x] Depois de **cada** join, calcular:
 
 ```text
 taxa_match = linhas_com_par / linhas_do_lado_esquerdo
 ```
 
-Gravar a taxa em `quality_checks`. Se ficar abaixo do limiar justificado no contrato, a regra bloqueante interrompe o job.
+Gravar a taxa em `quality_checks`. Se ficar abaixo do limiar justificado no contrato (**≥ 0.95**), a regra bloqueante interrompe o job (`exit 1`).
 
-5. `NULL` continua `NULL`. Não preencha proficiência nem meta com 0.
-6. Coluna `origem` = `oficial` em tudo que veio da Base dos Dados.
+5. [x] `NULL` continua `NULL`. Não preencha proficiência nem meta com 0.
+6. [x] Coluna `origem` = `oficial` em tudo que veio da Base dos Dados.
 
-Joins que a análise precisa de fato (todos têm de aparecer na Gold, não só existir na Silver):
+Joins materializados na Silver:
 
-- município × meta municipal (mesmo ano-alvo, mesma rede, mesma série)
-- UF × meta da UF
-- Brasil (agregado) × meta Brasil
-- alunos entram na validação cruzada da Gold (passo 6), no mesmo recorte geográfico
+- [x] município × meta municipal (`municipio_com_meta`, rede `3`)
+- [x] UF × meta da UF (`uf_com_meta`, rede `5`)
+- [x] Brasil (agregado UF) × meta Brasil (`brasil_com_meta`)
+- [x] `alunos` tipados (uso na Gold fica para o passo 6)
 
-Dataset de saída: `alfabetizacao_silver`, tabelas particionadas por ano.
+Dataset de saída: `alfabetizacao_silver`, tabelas particionadas por ano (`RANGE_BUCKET`).
 
-**Pronto quando:** taxa de match de cada join está persistida, o limiar está escrito no README, e as seis entidades têm coluna usada adiante.
+**Pronto quando:** taxa de match de cada join está persistida, o limiar está escrito no README, e as seis entidades têm coluna usada adiante. ✅ (`run_id=20d3623d0430`; municipio match ≈ 0,978; uf/brasil = 1,0)
 
 ---
 
 ### Passo 6 — Gold (produto analítico)
 
-**Status:** pendente · **Evidência:** `evidence/passo_06/`
-
+**Status:** feito · **Evidência:** `evidence/passo_06/`
 
 **Aulas:** Medalhão (carga Gold), agregações/CTE/window, Data Mesh, otimização.
 
@@ -254,61 +269,62 @@ Publique só se a qualidade bloqueante da Silver passou. Cada tabela é um produ
 
 Regras de cálculo:
 
-- Comparar meta e resultado na **mesma** rede e na **mesma** série.
-- Meta ausente é um terceiro estado (`sem_meta`), separado de `atingiu` e `nao_atingiu`.
-- Indicador nacional ou de UF segue o peso da fonte (alunos / peso amostral). Se alguma coluna for média simples de municípios, o nome da coluna diz isso (`media_simples_municipios`).
-- Taxa a partir de `alunos`: denominador = avaliados, com peso amostral. Presença e alfabetizado vêm do `dicionario`.
-- Projeção até 2030, se existir, chama-se cenário. Não chame de previsão.
-- Guardar a Gold (tabelas BigQuery + export Parquet em `gs://<bucket>/gold/`) para a Fase 3. No README, diga quais colunas são alvo de ML e quais seriam vazamento se entrassem como feature (a própria taxa que o modelo tentaria prever, e a meta do mesmo ano).
+- [x] Comparar meta e resultado na **mesma** rede e na **mesma** série.
+- [x] Meta ausente é um terceiro estado (`sem_meta`), separado de `atingiu` e `nao_atingiu`.
+- [x] Indicador nacional ou de UF segue o peso da fonte (alunos / peso amostral). Se alguma coluna for média simples de municípios, o nome da coluna diz isso (`media_simples_municipios` / `media_simples_ufs` na Silver).
+- [x] Taxa a partir de `alunos`: denominador = avaliados, com peso amostral. Presença e alfabetizado vêm do `dicionario`.
+- Projeção até 2030, se existir, chama-se cenário. Não chame de previsão. (não implementada neste passo)
+- [x] Guardar a Gold (tabelas BigQuery + export Parquet em `gs://<bucket>/gold/`) para a Fase 3. No README, diga quais colunas são alvo de ML e quais seriam vazamento se entrassem como feature (a própria taxa que o modelo tentaria prever, e a meta do mesmo ano).
 
-Partição por `ano`. Cluster por `id_municipio` ou `sigla_uf`, conforme o grain. Rode `QueryJobConfig.dry_run` e anote `total_bytes_processed` para o FinOps.
+Partição por `ano`. Cluster por `id_municipio` ou `sigla_uf` / `nivel_geo`, conforme o grain. [x] `QueryJobConfig.dry_run` + `total_bytes_processed` em `evidence/passo_06/dry_run_bytes.csv`.
 
-**Pronto quando:** as três perguntas do enunciado têm tabela (indicador por município, meta × resultado, evolução) e um `SELECT` de conferência bate com um número oficial que você anotou no perfil.
+**Pronto quando:** as três perguntas do enunciado têm tabela (indicador por município, meta × resultado, evolução) e um `SELECT` de conferência bate com um número oficial que você anotou no perfil. ✅ (`run_id=20d3623d0430`; CE 2024 rede 5 = 85,31; Brasil 2024 taxa 59,2 / meta 80)
 
 ---
 
 ### Passo 7 — Streaming simulado
 
-**Status:** pendente · **Evidência:** `evidence/passo_07/`
-
+**Status:** feito · **Evidência:** `evidence/passo_07/`
 
 **Aulas:** Kafka (produtor, tópico, consumidor, duplicata, tempo), NoSQL documento, ETL incremental, Lambda.
 
-Pasta: `streaming/`.
+Pasta: `streaming/` — `producer.py` + `consumer.py`.
 
 Isto é a camada rápida. Ela não regrava o histórico oficial.
 
 **Produtor** (`streaming/producer.py`):
 
-- Publica no tópico documentos JSON, por exemplo uma atualização fictícia de indicador municipal.
-- Campos mínimos: `event_id`, `produced_at` (relógio no momento do `publish`), `entidade`, `chave` (município/ano/rede/série), `valor`, `origem = "simulado"`.
-- `produced_at` é gerado uma vez, na produção. O consumer não copia esse campo para o relógio de ingestão.
+- [x] Publica no tópico documentos JSON (atualização fictícia de indicador municipal).
+- [x] Campos mínimos: `event_id`, `produced_at` (relógio no momento do `publish`), `entidade`, `chave` (município/ano/rede/série), `valor`, `origem = "simulado"`.
+- [x] `produced_at` é gerado uma vez, na produção. O consumer não copia esse campo para o relógio de ingestão.
+- [x] Demo `--n 20`: 18 válidos + 1 inválido + 1 duplicata.
 
 **Consumidor** (`streaming/consumer.py`):
 
-- Pull da subscription.
-- `ingested_at` = agora, na ingestão. Latência = `ingested_at - produced_at`. Se os dois nascerem na mesma linha de código, a latência é sempre zero e o critério cai.
-- Evento inválido (JSON quebrado, chave ausente, valor fora do domínio): vai para `gs://<bucket>/bronze/stream_quarentena/` e **não** entra na Gold oficial. Ack só depois de persistir a quarentena ou o evento bom.
-- Duplicata (`event_id` já visto): contabilizar e não somar de novo. A aula e o enunciado assumem *at-least-once*.
-- Evento bom: append em `gs://<bucket>/bronze/stream/ingestion_date=.../` e upsert na tabela `alfabetizacao_gold.eventos_stream`.
-- Métrica de lag: mensagens ainda não confirmadas na subscription (o “consumer lag” da aula de Kafka).
+- [x] Pull da subscription `alfabetizacao-stream-sub`.
+- [x] `ingested_at` = agora, na ingestão. Latência = `ingested_at - produced_at`.
+- [x] Evento inválido → `gs://<bucket>/bronze/stream_quarentena/`; ack só depois de persistir.
+- [x] Duplicata (`event_id` já visto): contabilizar e não somar de novo (*at-least-once* + MERGE).
+- [x] Evento bom → `gs://<bucket>/bronze/stream/ingestion_date=.../` + upsert `alfabetizacao_gold.eventos_stream`.
+- [x] Métrica de lag: `mensagens_recebidas` do lote + latência min/max/média.
 
-Separação obrigatória: consultas do indicador oficial filtram `origem = 'oficial'`. A tabela de eventos deixa `origem = 'simulado'` visível. Número de simulador não entra na taxa oficial.
+Separação obrigatória: consultas do indicador oficial filtram `origem = 'oficial'`. A tabela de eventos deixa `origem = 'simulado'` visível. [x]
 
-No README, três linhas comparando com o batch: latência (segundos vs carga do dia), frequência (evento vs run completa), garantia (*at-least-once* com dedupe vs snapshot da fonte).
+No README, três linhas comparando com o batch: latência / frequência / garantia. [x]
 
-**Pronto quando:** um evento válido chega na Gold de streaming com latência > 0, um duplicado não dobra o valor, um inválido fica na quarentena, e a tabela oficial não muda de número por causa do simulador.
+**Pronto quando:** um evento válido chega na Gold de streaming com latência > 0, um duplicado não dobra o valor, um inválido fica na quarentena, e a tabela oficial não muda de número por causa do simulador. ✅ (`received=20`, `inserted=18`, `dups=1`, `quarantine=1`, latência min ≈ 7,4 s; CE 2024 oficial inalterada)
 
 ---
 
 ### Passo 8 — Observabilidade
 
-**Status:** pendente · **Evidência:** `evidence/passo_08/`
-
+**Status:** feito · **Evidência:** `evidence/passo_08/`
 
 **Aulas:** FinOps (operar), Kafka (lag), Data Mesh (checagem na publicação).
 
-Tabela `alfabetizacao_ops.pipeline_runs`, sempre `append`:
+Pacote: `ops/telemetry.py` + instrumentação em bronze / silver / gold / stream. Prova: `ops/prove_observability.py`.
+
+Tabela `alfabetizacao_ops.pipeline_runs`, sempre `append` (`INSERT`):
 
 | Campo | Exemplo |
 |-------|---------|
@@ -319,25 +335,33 @@ Tabela `alfabetizacao_ops.pipeline_runs`, sempre `append`:
 | `rows_in`, `rows_out` | contagens |
 | `status` | success / failed |
 | `bytes_processed` | dry run ou job statistics do BigQuery |
+| `latency_*_s` | min/max/média do lote (stream) |
 
 Alerta que alguém receberia em produção:
 
-- Falha bloqueante publica uma mensagem num tópico `alfabetizacao-alertas` (ou dispara o alerta de log do Cloud Monitoring que você realmente configurou).
-- Documente no README: quem vê, em qual canal, e em quanto tempo. Se o canal for o e-mail do orçamento mais o tópico de alerta, descreva esses dois. Não escreva “temos PagerDuty” se não tiver.
+- [x] Falha bloqueante publica mensagem no tópico `alfabetizacao-alertas`.
+- [x] README: e-mail do orçamento R$ 1,00 + tópico Pub/Sub (sem inventar PagerDuty).
 
-Latência de streaming persiste na mesma tabela de runs ou em `stream_latency` (mínimo, máximo, média do lote).
+Latência de streaming nas colunas `latency_min_s` / `latency_max_s` / `latency_avg_s` de `pipeline_runs` quando `etapa = stream`. [x]
 
-**Pronto quando:** duas runs seguidas aparecem como duas linhas (a segunda não apagou a primeira) e uma falha gerou registro + mensagem de alerta, com print em `evidence/passo_08/`.
+**Pronto quando:** duas runs seguidas aparecem como duas linhas (a segunda não apagou a primeira) e uma falha gerou registro + mensagem de alerta, com print em `evidence/passo_08/`. ✅
 
 ---
 
 ### Passo 9 — FinOps com número medido
 
-**Status:** pendente · **Evidência:** `evidence/passo_09/`
+**Status:** feito · **Evidência:** `evidence/passo_09/`
 
 **Aula:** FinOps. Apoio: otimização de SQL e Cloud Data.
 
 Script: `ops/finops_snapshot.py`. Lê tamanho dos objetos no bucket, `total_bytes_processed` dos jobs e duração em `pipeline_runs`. Escreve `evidence/passo_09/custo.md`.
+
+1. [x] GCS: soma real via Storage API (`list_blobs`) — bucket ≈ **0,19 GiB** / 135 objetos.
+2. [x] BigQuery: bytes de `pipeline_runs` + evidências dos jobs (Bronze manifest, dry_run/export Gold); ≈ **760 MiB/batch** → ≈ **0,021 TiB/mês** na cadência 1/dia.
+3. [x] Pub/Sub: payload do lote demo (`n=20`) medido — média ≈ **240 B/msg**; projeção com 1.000 eventos/dia × 2 (publish+subscribe).
+4. [x] Computação: duração medida (Silver ≈ 56 s); motor serverless (sem VM 24/7).
+5. [x] Tabela + premissa de cadência + decisões FinOps na mesma página (`custo.md`). Preços públicos consultados em **2026-10-18**.
+6. [x] Execução atual e projeção com essa cadência **cabem no Always Free** (custo projetado ≈ $0 após free tier).
 
 Tabela que entra no README (preços públicos GCP na região usada; cite a data da consulta):
 
@@ -350,15 +374,15 @@ Tabela que entra no README (preços públicos GCP na região usada; cite a data 
 
 Cadência para a projeção (escreva a premissa): por exemplo 1 batch/dia e 1.000 eventos/dia. O número de bytes é o medido; a cadência é a premissa. Diga que a execução atual cabe no Always Free e que a coluna da direita é o custo se essa cadência rodasse fora da cota.
 
-Decisões que a aula pede para aparecer no texto: Parquet comprimido, partição por data de ingestão e por ano, colunas explícitas, GCS e processamento na mesma região, consumer de streaming que não fica com cluster ligado.
+Decisões que a aula pede para aparecer no texto: Parquet comprimido, partição por data de ingestão e por ano, colunas explícitas, GCS e processamento na mesma região, consumer de streaming que não fica com cluster ligado. [x]
 
-**Pronto quando:** a tabela tem quantidade tirada de log/API, não de chute, e a premissa da cadência está na mesma página.
+**Pronto quando:** a tabela tem quantidade tirada de log/API, não de chute, e a premissa da cadência está na mesma página. ✅ (`python ops/finops_snapshot.py` → `evidence/passo_09/custo.md`)
 
 ---
 
 ### Passo 10 — README, evidências e clone limpo
 
-**Status:** pendente · **Evidência:** `evidence/passo_10/`
+**Status:** feito · **Evidência:** `evidence/passo_10/` · **Avaliação:** `docs/avaliacao_conformidade.md`
 
 
 **Aulas:** todas as decisões acima viram a seção Decisões.
@@ -434,7 +458,8 @@ python gold/build.py
 python streaming/producer.py --n 20
 python streaming/consumer.py
 python quality/prove_failure.py
+python ops/prove_observability.py
 python ops/finops_snapshot.py
 ```
 
-`prove_failure.py` é o único comando que deve terminar com erro.
+`prove_failure.py` e `prove_observability.py` devem terminar com erro (exit ≠ 0).

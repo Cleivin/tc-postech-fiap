@@ -1,0 +1,6 @@
+table,uri_prefix,job_id,bytes_processed
+indicador_municipio,gs://tc-postech-fiap-datalake/gold/indicador_municipio/ingestion_date=2026-10-18/run_id=20d3623d0430,c5280c8e-49d8-4e6b-ac85-10f3bcf2bd5e,3634479
+indicador_uf,gs://tc-postech-fiap-datalake/gold/indicador_uf/ingestion_date=2026-10-18/run_id=20d3623d0430,94dfb634-36f2-4d9f-a15c-a7f6ce1a1e7c,20824
+meta_vs_resultado,gs://tc-postech-fiap-datalake/gold/meta_vs_resultado/ingestion_date=2026-10-18/run_id=20d3623d0430,73719a9e-be45-4886-9e30-cad3ade9c988,1487271
+evolucao_temporal,gs://tc-postech-fiap-datalake/gold/evolucao_temporal/ingestion_date=2026-10-18/run_id=20d3623d0430,2103e0cc-589e-47d7-84d6-f29c58affb0e,3224227
+validacao_microdado,gs://tc-postech-fiap-datalake/gold/validacao_microdado/ingestion_date=2026-10-18/run_id=20d3623d0430,a199a584-ab1a-4566-befb-dd88da585b1c,1586085

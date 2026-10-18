@@ -1,0 +1,11 @@
+============================================================
+QUALITY prove_failure | project=tc-postech-fiap
+prove_run_id=prove_0c6d9f10ea09
+============================================================
+fonte Bronze run_id=20d3623d0430
+fixture criada: tc-postech-fiap.alfabetizacao_ops.fixture_dup_keys
+duplicate_keys value=1.0 status=fail (esperado: fail com value>=1)
+[OK] falha bloqueante registrada em quality_checks
+  run_id=prove_0c6d9f10ea09 status=fail value=1.0
+Silver/Gold nao publicadas (scripts nao invocados).
+[ERRO] prove_failure concluiu com falha esperada (exit 1)

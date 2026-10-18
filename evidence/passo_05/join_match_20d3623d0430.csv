@@ -1,0 +1,4 @@
+﻿run_id,layer,entity,rule,class,status,value,threshold,detail,checked_at,linhas_esquerda,linhas_com_par
+20d3623d0430,silver,municipio_com_meta,join_match,blocking,pass,0.9777900146842878,0.95,linhas_esquerda=10896; linhas_com_par=10654,2026-10-18T19:54:26.860984+00:00,10896,10654
+20d3623d0430,silver,uf_com_meta,join_match,blocking,pass,1.0,0.95,linhas_esquerda=49; linhas_com_par=49,2026-10-18T19:54:28.912038+00:00,49,49
+20d3623d0430,silver,brasil_com_meta,join_match,blocking,pass,1.0,0.95,linhas_esquerda=2; linhas_com_par=2,2026-10-18T19:54:32.543917+00:00,2,2
