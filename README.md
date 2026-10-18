@@ -142,7 +142,7 @@ O `EXPORT` lista os nomes de [`docs/contrato_dados.md`](docs/contrato_dados.md).
 
 ## Clone limpo
 
-Testado o contrato dos comandos contra os scripts deste repositório. Um segundo projeto GCP não foi criado aqui: a prova de que o caminho produz Gold e consome evento é a run `20d3623d0430`, em `evidence/`. Um clone novo gera outro `run_id`.
+Em 18/10/2026 um clone limpo executou os comandos desta seção na mesma conta Google e no mesmo projeto GCP. A ingestão gerou o `run_id` `140229ad1a67` e chegou na Gold e no consumo de um evento. A run `20d3623d0430` continua sendo a referência dos números, em `evidence/`.
 
 ### 1. Máquina
 
