@@ -24,7 +24,7 @@ A segunda não substituiu a primeira. 3.913.901 é a soma das dez tabelas Silver
 
 `prove_fail_81ee7cf0f8ea`: duração 0,57 s, `rows_in = 0`, `bytes_processed = 0`, `status = failed`. O detalhe diz que Silver/Gold não são publicáveis. Não houve `CREATE` de produto nessa prova — o tempo curto e o zero de bytes são o sinal disso.
 
-`alert_publish.txt`: tópico `projects/tc-postech-fiap/topics/alfabetizacao-alertas`, `message_id = 22579172021738768`, payload com o mesmo `run_id` e o mesmo texto da linha `failed`. Quem faz pull nesse tópico recebe o alerta. O e-mail de orçamento (Passo 1) é o outro canal, e não disparou aqui porque a prova não gasta cota.
+`alert_publish.txt`: tópico `projects/tc-postech-fiap/topics/alfabetizacao-alertas`, `message_id = 22579172021738768`, payload com o mesmo `run_id` e o mesmo texto da linha `failed`. Nesta entrega não há subscription nesse tópico: quem descobre a falha é quem executou o comando, pelo exit 1, em 0,57 s. O JSON fica publicado para um assinante futuro (e-mail, Slack ou política), quando a pipeline rodar sem operador na sessão. O e-mail de orçamento (Passo 1) é só freio de custo, e não disparou aqui porque a prova não gasta cota.
 
 ## Limite desta evidência
 

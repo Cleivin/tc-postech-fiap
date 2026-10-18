@@ -27,10 +27,10 @@ A rubrica do guia está em [`Tech_Challenge_Fase2_Passo_a_Passo.md`](Tech_Challe
 | 15 | Batch + streaming, com `origem` | Passos 3 e 7 | Oficial = `oficial`. Evento = `simulado`, tabela separada. O simulador não altera CE 2024. |
 | 15 | Medalhão | GCS `bronze/` e `gold/` + datasets `alfabetizacao_bronze/silver/gold` | Três cargas separadas. Bronze sem regra de negócio. |
 | 10 | Qualidade | Passo 4 + taxa de join do Passo 5 | Bloqueante sai com exit ≠ 0 e grava `quality_checks`. |
-| 10 | Monitoramento | `pipeline_runs` + tópico `alfabetizacao-alertas` | Append comprovado. A duração medida na tabela, no snapshot do Passo 9, é a da Silver. |
+| 10 | Monitoramento | `pipeline_runs` + exit ≠ 0 na sessão | Quem descobre é quem executou o comando, no mesmo processo (prova em 0,57 s). A linha `failed` sobrevive em `pipeline_runs`. O tópico `alfabetizacao-alertas` é o gancho para um assinante futuro; hoje não há subscription. A duração medida na tabela, no snapshot do Passo 9, é a da Silver. |
 | 10 | FinOps | Passo 9 | 0,19 GiB no bucket; ~0,021 TiB/mês de query na cadência 1 batch/dia; custo projetado $0 dentro do Always Free. |
 | 10 | Cloud + repo | `evidence/` + README | Jobs reais. Chave e `.env` fora do Git. |
-| 5 | README | Passo 10 | Contexto, diagrama, trade-offs, FinOps, vazamento de alvo, limitações. |
+| 5 | README | Passo 10 | Contexto, diagrama, trade-offs, acesso à fonte (sem egress, run nova sem apagar a anterior, sem agenda, coluna do contrato), FinOps, vazamento de alvo, limitações. |
 | 15 | Vídeo | Passo 11 | Não entregue. |
 
 Diferenciais que já estão no repositório: validação cruzada do microdado (`validacao_microdado`), anomalia de `rede` documentada, e a regra de join executável (`quality/validate.py --layer silver` + `prove_failure.py`). Não há orquestrador nem Terraform, e o README não afirma que existam.

@@ -340,7 +340,7 @@ Tabela `alfabetizacao_ops.pipeline_runs`, sempre `append` (`INSERT`):
 Alerta que alguém receberia em produção:
 
 - [x] Falha bloqueante publica mensagem no tópico `alfabetizacao-alertas`.
-- [x] README: e-mail do orçamento R$ 1,00 + tópico Pub/Sub (sem inventar PagerDuty).
+- [x] README: quem descobre a falha é quem executou o comando, no mesmo processo; a linha `failed` fica em `pipeline_runs`. E-mail, Slack ou política ficam para quando não houver operador na sessão. O e-mail de R$ 1,00 é só custo. Sem PagerDuty.
 
 Latência de streaming nas colunas `latency_min_s` / `latency_max_s` / `latency_avg_s` de `pipeline_runs` quando `etapa = stream`. [x]
 

@@ -26,7 +26,9 @@ Em 2024, 1.141 de 5.448 municípios da rede municipal atingiram 80 (21%). Em 202
 
 ---
 
-## O que rodou
+## Arquitetura proposta
+
+Lakehouse híbrido (**Lambda** + **Medalhão**), em **ELT**. O diagrama é o que rodou no GCP (run `20d3623d0430`): batch do histórico oficial e um evento simulado ao lado, sem Spark, Kafka nem orquestrador.
 
 ```mermaid
 flowchart TB
@@ -61,7 +63,11 @@ flowchart TB
   OPS -->|falha bloqueante| AL
 ```
 
-A Silver não tem pasta no lake. A transformação é SQL no BigQuery. O histórico cru fica no GCS; o produto analítico fica no BigQuery e é exportado de novo para `gold/`.
+**Batch.** A fonte pública vai para Parquet cru no GCS, um `run_id` por execução. `alfabetizacao_bronze` é external table desse path. A Silver tipa, traduz código e junta fato com meta em SQL (não há pasta `silver/` no bucket). Se o `join_match` ficar abaixo de 0,95, o job para. A Gold publica os cinco produtos com `origem = oficial` e exporta Parquet para `gold/`.
+
+**Stream.** O produtor manda um JSON fictício ao Pub/Sub. Evento válido cai em `bronze/stream/` e em `eventos_stream` (`origem = simulado`); inválido vai para a quarentena; duplicata não soma de novo. A taxa oficial permanece intacta.
+
+**Controle.** `quality_checks` e `pipeline_runs` só recebem append. Falha bloqueante aparece no terminal, encerra com exit diferente de zero e publica o JSON em `alfabetizacao-alertas` para um assinante futuro. A ordem das etapas é a dos comandos deste README.
 
 ---
 
@@ -72,33 +78,65 @@ A Silver não tem pasta no lake. A transformação é SQL no BigQuery. O histór
 | Python 3.14, pandas e PyArrow só na borda (evidência, tipos) | Spark / cluster |
 | BigQuery (extração, Silver, Gold, checagens) | Orquestrador (Airflow, Composer) e Terraform |
 | Cloud Storage, Parquet particionado | Kafka ligado 24/7 |
-| Pub/Sub (stream simulado + alerta) | Banco vetorial |
-| Scripts na ordem do README | Projeção / cenário até 2030 |
+| Pub/Sub (evento simulado e alerta) | Banco vetorial |
+| Scripts na ordem deste README | Projeção / cenário até 2030 |
 
-Uso futuro da Gold que a aula de banco vetorial sugere, e que **não** foi implementado: buscar municípios com trajetória parecida. A tabela `indicador_municipio` seria a fonte dessa busca.
+O que está na coluna da esquerda já cobre o padrão da aula. A coluna da direita repete o mesmo papel com mais máquina, e neste volume não muda o resultado.
+
+- **Spark** ensinaria o Medalhão. O padrão está em SQL no BigQuery. Cerca de 3,8 milhões de alunos cabem numa query que liga e desliga; um cluster ficaria ligado e sairia do free tier.
+- **Kafka** ensinaria produtor, tópico, consumidor, duplicata e dois relógios. O Pub/Sub já faz isso. Um broker 24/7 para uma demo de 20 mensagens é custo contínuo.
+- **Terraform e orquestrador** criariam a infra e o agendamento. Bucket, tópico e subscription nascem uma vez; os datasets nascem nos scripts. A reprodução é a sequência de comandos, não um DAG.
+- **Banco vetorial** serviria, depois, para achar municípios de trajetória parecida em `indicador_municipio`. Esta fase entrega a tabela.
 
 ---
 
-## Trade-offs
+## Decisões arquiteturais
 
-| Escolha | O que se ganha | O que se abre mão |
-|---------|----------------|-------------------|
-| **ELT** | A Bronze guarda o valor oficial. A regra fica em SQL, auditável, sem rebaixar 3,8 milhões de linhas para a máquina. | Não há um dataframe “já limpo” no notebook. |
-| **Lambda** | O histórico oficial é batch. O evento fictício chega em segundos e não regrava o país. | Não existe feed real do Inep. A camada rápida é simulação. |
-| **Lake + warehouse** | Parquet no GCS é o histórico (`run_id`). BigQuery é o lugar da pergunta. | A Silver não é um segundo Parquet. Quem quiser arquivo da Silver precisa exportar. |
-| **Pub/Sub no lugar de Kafka** | Produtor, tópico, consumidor, duplicata e dois relógios, sem cluster. | Não há partição de log nem consumer group no sentido do Kafka. O lag medido é `ingested_at − produced_at`. |
-| **SQL no lugar de Spark** | O volume cabe na cota. O job liga e desliga. | Se o microdado deixar de caber, o padrão Medalhão da aula de Spark é a evolução, não o caminho atual. |
-| **BigQuery público no lugar de download** | A extração pede só as colunas do contrato e grava direto no bucket. | Depende da Base dos Dados continuar pública e do schema não mudar de nome. |
+Quatro trade-offs do que rodou. O detalhe de Spark, Kafka e orquestrador está em Tecnologias.
 
-De-para de rede, obrigatório por causa da anomalia do Passo 2: código `3` ↔ meta `Municipal`; código `5` ↔ meta `Pública`. Limiar bloqueante do join: **≥ 0,95**, justificado pela cobertura de 96–97% medida no perfil ([contrato](docs/contrato_dados.md)).
+### Batch versus streaming
 
-Batch versus stream:
+Os dois convivem (Lambda). O batch responde ao histórico oficial; o stream só prova a camada rápida. O evento é simulado e não regrava a taxa com `origem = oficial`.
 
 | | Batch | Stream |
 |--|--------|--------|
-| Latência | Run Silver medida em ~56 s; a carga completa é da ordem de minutos | 7–24 s entre produção e ingestão na demo |
-| Frequência | Uma run, o histórico inteiro | Uma mensagem por evento |
-| Garantia | Snapshot da fonte naquela `run_id` | *At-least-once*, dedupe por `event_id` |
+| O que carrega | As seis entidades + `dicionario`, a run inteira | Um JSON de indicador municipal |
+| Latência | Silver medida em ~56 s; a carga completa é da ordem de minutos | 7–24 s entre `produced_at` e `ingested_at` na demo |
+| Frequência | Quando o script roda | Uma mensagem por evento |
+| Garantia | Snapshot daquela `run_id`; a run anterior permanece no bucket | *At-least-once*; duplicata não soma `valor` de novo |
+| Onde mora | `alfabetizacao_gold` com `origem = oficial` | `eventos_stream` com `origem = simulado` |
+
+Um pipeline só batch perderia a mensageria da aula. Um pipeline só stream não tem feed do Inep e não reconstrói o país.
+
+### Data lake versus data warehouse
+
+Os dois. O lake guarda arquivo; o warehouse responde em SQL.
+
+| | Lake (Cloud Storage) | Warehouse (BigQuery) |
+|--|----------------------|----------------------|
+| O que é | Parquet cru em `bronze/<entidade>/ingestion_date/run_id` e o export da Gold em `gold/` | `alfabetizacao_bronze` (external table), Silver e Gold nativas |
+| Papel | Histórico. Uma run nova não apaga a anterior | Pergunta: tipo, join com a meta, indicador, evolução |
+| Silver | Não há pasta `silver/` | Tabela particionada por `ano` |
+
+ELT de propósito: a Bronze não aplica regra de negócio. Limpar no pandas obrigaria a baixar 3,8 milhões de alunos. A anomalia de `rede` (código no fato, rótulo na meta) só é resolvida na Silver, com de-para `3` ↔ `Municipal` e `5` ↔ `Pública`.
+
+### Custo versus performance
+
+A meta é caber no Always Free, não ser o mais rápido possível. Por isso o motor é SQL serverless (job liga e desliga), Parquet comprimido, partição por `run_id` e por `ano`, e só as colunas do contrato na extração.
+
+O que se mede: a Silver leva ~56 s; no `dry_run` da Gold, a validação do microdado concentra ~195 MiB dos ~202 MiB. Na cadência de 1 batch/dia, a projeção fica em ~0,021 TiB/mês, dentro de 1 TiB gratuito ([`evidence/passo_09/custo.md`](evidence/passo_09/custo.md)).
+
+O que se abre mão: latência de segundos no indicador oficial, e um cluster sempre ligado. Se o microdado deixar de caber na cota, o caminho é Spark — não é o caso desta carga.
+
+### Forma de acesso à fonte
+
+A fonte já está no BigQuery público (`basedosdados.br_inep_avaliacao_alfabetizacao`). O batch faz `EXPORT DATA` das colunas do contrato direto para o GCS, na mesma nuvem. Não há download do país para o notebook, nem `SELECT *`, nem egress entre nuvens: o dado não sai do GCP. O bucket está em `us-central1` e o BigQuery em `US`; essa região fica dentro da multi-região, então a gravação no lake não abre uma segunda conta de rede.
+
+O byte cobrado nesse acesso é o da query. Na run `20d3623d0430` o export leu **271.547.681** bytes (alunos sozinho, 268.545.240). Cabe no 1 TiB gratuito do Always Free.
+
+A Base dos Dados pode publicar uma versão nova. Este repositório não busca isso sozinho: não há agenda nem DAG. A cópia no lake só muda quando alguém roda `python bronze/ingest_batch.py` de novo. Essa execução cria outro `run_id` e não apaga a anterior. As duas já convivem no bucket: `f92c40cfe9a7` e `20d3623d0430`, no mesmo `ingestion_date`. O custo se repete — outro scan das colunas do contrato, mais uma partição Parquet — e, no volume medido, continua dentro da cota.
+
+O `EXPORT` lista os nomes de [`docs/contrato_dados.md`](docs/contrato_dados.md). Se a fonte renomear ou retirar uma dessas colunas, a query falha, o script sai com exit diferente de zero e a run anterior permanece. Uma coluna nova que a fonte acrescente e o contrato não liste não entra no Parquet e não derruba o job; ela só passa a ser extraída quando entrar no contrato e na lista de `bronze/ingest_batch.py`.
 
 ---
 
@@ -208,12 +246,9 @@ Não passe `--run_id` se quiser a última Bronze. O `run_id` impresso pela inges
 
 Cada etapa instrumentada faz **append** em `alfabetizacao_ops.pipeline_runs` (`run_id`, duração, linhas, status, bytes; stream também grava latência mínima, máxima e média).
 
-Canais que existem de fato:
+Uma falha bloqueante aparece no terminal e encerra com exit diferente de zero. Quem descobre é quem executou o comando, no mesmo processo, em segundos. Na prova do Passo 8, esse script encerrou em 0,57 s (`prove_fail_81ee7cf0f8ea`). O registro que sobrevive à sessão é a linha `failed` em `pipeline_runs`. Prova: `python ops/prove_observability.py` e [`evidence/passo_08/`](evidence/passo_08/).
 
-1. E-mail do orçamento de R$ 1,00 (console de billing).
-2. Tópico `alfabetizacao-alertas`. Uma falha bloqueante publica um JSON. Prova: `python ops/prove_observability.py` e [`evidence/passo_08/`](evidence/passo_08/).
-
-Não há PagerDuty nem Slack.
+E-mail, Slack ou política de alerta entram na etapa em que a pipeline rodar sem um operador na sessão. O tópico `alfabetizacao-alertas` já recebe o JSON dessa falha para esse assinante futuro; hoje não há subscription nele. O e-mail de orçamento de R$ 1,00 continua sendo só o freio de custo.
 
 Na fotografia do Passo 9, `pipeline_runs` tem a etapa Silver (duas linhas `success`, ~56 s e ~58 s, 276.408.457 bytes) e a falha provocada. Bytes de Bronze e de Gold usados na conta vieram dos manifests e do `dry_run`, não dessa tabela.
 
@@ -234,17 +269,33 @@ Detalhe e premissa: [`evidence/passo_09/custo.md`](evidence/passo_09/custo.md).
 
 ---
 
-## Uso em IA (Fase 3)
+## Aplicação em IA
 
-A Gold está pronta como terreno de modelo: `indicador_municipio` (município × ano × rede × série), `evolucao_temporal` (trajetória com `LAG`) e `meta_vs_resultado` (distância até 80). Arquivo em `gs://<bucket>/gold/`.
+A Gold é o terreno da Fase 3, em tabela e em Parquet (`gs://<bucket>/gold/`). Nenhum modelo foi treinado aqui. O que segue é o uso possível de cada produto, com `origem = oficial`. `eventos_stream` fica de fora: o `valor` é sorteado.
 
-Alvo típico: a `taxa_alfabetizacao` de um ano que ainda não aconteceu, ou `status_meta` / `gap_pp`.
+### Predição de alfabetização
 
-**Vazam o alvo se entrarem como feature do mesmo ano:** a própria `taxa_alfabetizacao`, a `meta_alfabetizacao_2030` e o `status_meta` ou `gap_pp` calculados com ela.
+O alvo é a `taxa_alfabetizacao` de um ano que ainda não está na linha, ou o fato de o município cruzar 80 (`status_meta` futuro). A unidade natural é `indicador_municipio` (município × ano × rede × série). Com só 2023 e 2024, o histórico cabe em `evolucao_temporal`: `taxa_anterior` e `delta_pp` do ano anterior entram como feature; a taxa do ano seguinte é o rótulo.
 
-Features que não são o rótulo: taxa e delta de anos anteriores, rede, série, e a composição `proporcao_aluno_nivel_*` **somente em 2024** (em 2023 essa coluna veio inteira nula; não imputar zero). Filtrar `origem = 'oficial'`. Não treinar com `eventos_stream`.
+Candidatas que não são o rótulo: rede, série e a composição `proporcao_aluno_nivel_*` em 2024. Em 2023 essa composição veio inteira nula; preencher com zero diria que ninguém está no nível 0. Isto é trajetória observada, não o cenário até 2030 — essa tabela não foi construída.
 
-`validacao_microdado` mostra que, no caso típico, a taxa oficial e a taxa ponderada dos alunos diferem na terceira casa decimal (mediana absoluta 0,0037 pp). 57 de 12.408 linhas passam de 1 pp. O modelo deve usar a taxa oficial como alvo, não a reconstrução, quando as duas divergem.
+### Desigualdade educacional
+
+`indicador_uf` e `meta_vs_resultado` já medem a distância entre territórios, sem modelo. Em 2024, na rede pública, o Ceará está em 85,31 e a Bahia em 35,96 — quase 50 pp no mesmo indicador. No município de rede 3, 1.141 de 5.448 atingiram 80 (21%); a média de quem não atingiu é 55,2. As 242 linhas `sem_meta` têm média 53,7: a lacuna de cadastro se parece com quem ficou abaixo da meta, não com quem já passou.
+
+`validacao_microdado` serve de auditoria, não de segundo ranking. A diferença absoluta mediana contra a taxa oficial é 0,0037 pp. O alvo de qualquer comparação territorial continua sendo a taxa do Inep.
+
+### Políticas públicas
+
+A mesma Gold ordena onde agir. `gap_pp` e `status_meta` separam quem já chegou a 80, quem está longe e quem nem tem meta pactuada. `delta_pp` mostra a trajetória de um ano para o outro (Minas Gerais +12,26 pp; Rio Grande do Sul −18,76 pp na rede pública). Isso sustenta uma fila de prioridade — município, rede, série — e não uma estimativa do efeito de uma política. O pipeline não observa a intervenção, só o indicador.
+
+### Vazamento de alvo
+
+Numa base de features, a linha não pode trazer o alvo e uma coluna calculada a partir dele. O modelo acerta tudo e não aprendeu nada: basta inverter a fórmula.
+
+Na Gold isso é direto. `gap_pp` é `taxa_alfabetizacao − meta_alfabetizacao_2030`. `status_meta` é a taxa comparada com 80 (`atingiu` / `nao_atingiu`), ou `sem_meta` quando falta taxa ou meta. Prever `status_meta` de 2024 tendo `gap_pp` de 2024, ou prever a taxa tendo o gap do mesmo ano, devolve o rótulo. `taxa_micro` no mesmo ano também vaza: ela reproduz a taxa oficial na mediana.
+
+O que pode entrar como feature do ano que se quer prever é o passado (`taxa_anterior`, `delta_pp` de anos anteriores) e o contexto (rede, série, níveis de 2024). A meta 80 é a régua da política, constante onde existe; não substitui a taxa e não deve ser tratada como se fosse causa do resultado daquele ano.
 
 ---
 

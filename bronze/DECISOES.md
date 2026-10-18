@@ -29,3 +29,5 @@ Colunas técnicas permitidas e usadas: `ingestion_ts`, `source_table` no Parquet
 ## O que esta camada não faz
 
 Não traduz `rede`, não calcula taxa, não descarta RR e não escolhe a “rede certa” para a meta. Isso é Silver.
+
+Não há agenda. Uma atualização da Base dos Dados só entra no lake na próxima execução manual de `ingest_batch.py`, que cria outro `run_id` e deixa o anterior no bucket. O `EXPORT` nomeia as colunas do contrato: nome removido ou renomeado na fonte faz a query falhar e preserva a run anterior; coluna nova fora do contrato é ignorada até alguém incluí-la. Não há egress entre nuvens — a origem já é o BigQuery público e o destino é o GCS na mesma multi-região `US`.

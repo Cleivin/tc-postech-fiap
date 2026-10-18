@@ -5,14 +5,14 @@ Guia da pasta: [`README.md`](README.md). Evidência: [`evidence/passo_08/`](../e
 
 ## Observabilidade — o que o challenge pede
 
-Tabela `alfabetizacao_ops.pipeline_runs` sempre em append, com duração, linhas, status e bytes. Falha bloqueante publica no tópico `alfabetizacao-alertas`. Duas runs seguidas não se apagam. Uma falha deixa registro e mensagem.
+Tabela `alfabetizacao_ops.pipeline_runs` sempre em append, com duração, linhas, status e bytes. Falha bloqueante aparece no terminal, sai com exit diferente de zero e publica no tópico `alfabetizacao-alertas`. Duas runs seguidas não se apagam. Uma falha deixa registro e mensagem.
 
 ## Decisões de observabilidade
 
 | Decisão | Alternativa recusada | Motivo |
 |---------|----------------------|--------|
 | `INSERT` em `pipeline_runs` | `WRITE_TRUNCATE` ou uma linha “última run” | O guia pede histórico. As duas Silver de `20d3623d0430` (58,1 s e 56,2 s) convivem na tabela. |
-| Alerta = Pub/Sub `alfabetizacao-alertas` | PagerDuty, e-mail SMTP próprio ou só `print` | Não há esses serviços no projeto. O canal que existe é o tópico, mais o e-mail do orçamento de R$ 1,00 configurado no console. |
+| Quem descobre a falha, nesta entrega, é quem rodou o comando | E-mail, Slack ou política de Monitoring agora | A execução é manual, sem DAG. O aviso é o exit ≠ 0 no mesmo processo (na prova, 0,57 s). A linha `failed` fica em `pipeline_runs`. O tópico `alfabetizacao-alertas` recebe o JSON para quando houver agenda sem operador; hoje não há subscription. O e-mail de R$ 1,00 é só custo. |
 | A prova de falha não roda a Silver de novo | Derrubar a Silver real para gerar o alerta | `prove_observability.py` grava `status=failed` e publica o JSON. Exit 1. A Gold oficial não é republicada por essa prova. |
 | Latência de stream nas colunas `latency_*_s` quando `etapa = stream` | Tabela de métricas separada | O guia lista esses campos em `pipeline_runs`. |
 | Tópico de alerta criado na primeira necessidade | Exigir o tópico já no teste de conexão | Um clone limpo ainda não passou pelo Passo 8. O teste de ambiente avisa e segue; a prova de observabilidade cria o tópico. |
