@@ -14,6 +14,6 @@ Organização por passo do guia [`docs/Tech_Challenge_Fase2_Passo_a_Passo.md`](.
 | `passo_08/` | Observabilidade | `pipeline_runs` append (2 success) + failed + alerta Pub/Sub |
 | `passo_09/` | FinOps | `custo.md` + CSVs medidos; leitura em `ANALISE.md` |
 | `passo_10/` | README / clone | README da raiz, pins, consultas de leitura da Gold |
-| `passo_11/` | Vídeo | ainda não gravado |
+| `passo_11/` | Vídeo | roteiro e slides em `passo_11/pitch/`; gravação ainda não feita |
 
 Cada pasta `passo_01/` … `passo_09/` tem um `ANALISE.md` com a leitura do artefato e, quando o arquivo é dado, o insight. Decisões de implementação: `DECISOES.md` na pasta do código (`bronze/`, `sql/`, `quality/`, `silver/`, `gold/`, `streaming/`, `ops/`). Comparação com o enunciado: [`docs/avaliacao_conformidade.md`](../docs/avaliacao_conformidade.md).

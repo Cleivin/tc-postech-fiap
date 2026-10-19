@@ -340,7 +340,7 @@ O Inep / Base dos Dados chega assim. A Bronze guarda o valor cru; a Gold não co
 
 Ainda não gravado. Quando existir, o link entra aqui.
 
-Roteiro previsto: o problema (2º ano, indicador, meta 80), a arquitetura em uma frase (batch histórico + evento simulado, Bronze → Silver → Gold no GCP), um número da Gold igual ao deste README (Ceará 2024, rede pública, 85,31, ou Brasil 2024, 59,2 contra meta 80), e o que a Fase 3 pode prever sem usar a taxa do mesmo ano como feature.
+Roteiro e slides: [`evidence/passo_11/pitch/`](evidence/passo_11/pitch/README.md). O problema (2º ano, indicador, meta 80), a arquitetura em uma frase (batch histórico + evento simulado, Bronze → Silver → Gold no GCP), um número da Gold igual ao deste README (Ceará 2024, rede pública, 85,31, ou Brasil 2024, 59,2 contra meta 80), e o que a Fase 3 pode prever sem usar a taxa do mesmo ano como feature.
 
 ---
 
@@ -366,7 +366,7 @@ tc-postech-fiap/
 └── evidence/
     ├── passo_01/ … passo_09/      # cada pasta tem ANALISE.md
     ├── passo_10/                  # este README e as consultas de leitura
-    └── passo_11/                  # vídeo, ainda vazio
+    └── passo_11/pitch/            # roteiro e slides; vídeo ainda não gravado
 ```
 
 Contrato de grain, chave e limiar: [`docs/contrato_dados.md`](docs/contrato_dados.md).

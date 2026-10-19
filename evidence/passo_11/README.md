@@ -2,9 +2,11 @@
 
 Ainda não gravado. O link fica vazio de propósito no [README da raiz](../../README.md).
 
-Roteiro, quando for gravar (até 5 minutos):
+O roteiro, os slides e a checagem dos números estão em [`pitch/`](pitch/README.md):
 
-1. Problema: alfabetização até o 2º ano, indicador, meta pactuada 80, corte de 743 pontos na escala do Saeb.
-2. Arquitetura: batch do histórico oficial + evento simulado, Bronze → Silver → Gold no GCP.
-3. Um número que está na Gold e no README: Ceará 2024, rede pública, taxa **85,31**; ou Brasil 2024, taxa **59,2** contra meta **80**.
-4. A Fase 3 pode usar trajetória de anos anteriores. Não entra como feature do ano-alvo a própria `taxa_alfabetizacao`, nem a meta 80, nem o `status_meta` derivado delas.
+- [`pitch/pitch_executivo.pptx`](pitch/pitch_executivo.pptx) — apresentação pronta, com a narração nas notas
+- [`pitch/roteiro.md`](pitch/roteiro.md) — narração de até 5 minutos
+- [`pitch/slides.md`](pitch/slides.md) — conteúdo de cada slide
+- [`pitch/checklist.md`](pitch/checklist.md) — requisitos, números e o que não dizer
+
+Eixos que o roteiro cobre: alfabetização até o 2º ano, corte de 743 e meta pactuada 80; Bronze → Silver → Gold, com evento simulado separado; um número da Gold igual ao README (Ceará 2024, rede pública, **85,31**; Brasil 2024, **59,2** contra meta **80**); a Fase 3 pode usar trajetória de anos anteriores, sem a taxa do mesmo ano, a meta 80 ou o `status_meta` derivado como feature.
