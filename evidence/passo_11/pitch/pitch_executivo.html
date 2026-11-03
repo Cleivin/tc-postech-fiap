@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pitch executivo — Alfabetização Fase 2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #0E0E0E;
+      --fg: #F2F2F2;
+      --muted: #9A9A9A;
+      --muted-2: #8A8A8A;
+      --teal: #6DABA6;
+      --ink: #0E0E0E;
+      --card: #161616;
+      --line: #2C2C2C;
+      --danger: #F87663;
+      --ok: #2E9E8F;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      overflow: hidden;
+    }
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: var(--bg);
+    }
+    section.slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      padding: 36px 56px 64px;
+      overflow: hidden;
+    }
+    section.slide.active { display: flex; flex-direction: column; }
+    .eyebrow {
+      font-family: "Roboto Mono", monospace;
+      font-size: clamp(12px, 1.2vw, 18px);
+      letter-spacing: 0.14em;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: clamp(16px, 2vh, 28px);
+    }
+    .title {
+      font-size: clamp(32px, 3.4vw, 52px);
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 1.05;
+      margin-bottom: 16px;
+    }
+    .title .accent { color: var(--teal); }
+    .huge {
+      font-size: clamp(72px, 12vw, 180px);
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      line-height: 0.92;
+      font-variant-numeric: tabular-nums;
+    }
+    .huge.teal { color: var(--teal); }
+    .lead {
+      font-size: clamp(18px, 1.8vw, 32px);
+      line-height: 1.35;
+      color: var(--muted);
+      max-width: 36ch;
+    }
+    .grid-2 {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 28px;
+      align-items: stretch;
+      min-height: 0;
+    }
+    .grid-2 > div { min-height: 0; display: flex; flex-direction: column; }
+    .grid-3 {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(16px, 2vw, 28px);
+      align-items: stretch;
+      min-height: 0;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: clamp(18px, 2.2vw, 28px);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 0;
+    }
+    .card h3 {
+      font-size: clamp(16px, 1.4vw, 22px);
+      font-weight: 600;
+      color: var(--teal);
+    }
+    .card p, .card li {
+      font-size: clamp(15px, 1.35vw, 22px);
+      line-height: 1.35;
+      color: #C8C8C8;
+    }
+    .card .num {
+      font-size: clamp(36px, 4.2vw, 64px);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+    .foot {
+      margin-top: auto;
+      padding-top: 18px;
+      font-size: clamp(12px, 1.1vw, 16px);
+      color: var(--muted-2);
+    }
+    .ruler {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+      align-items: center;
+      min-height: 0;
+    }
+    .mark {
+      border-top: 3px solid var(--line);
+      padding-top: 22px;
+    }
+    .mark.teal { border-top-color: var(--teal); }
+    .mark .k {
+      font-family: "Roboto Mono", monospace;
+      font-size: clamp(12px, 1.1vw, 16px);
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .mark .v {
+      font-size: clamp(48px, 6.5vw, 96px);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 0.95;
+    }
+    .hint {
+      margin-top: 12px;
+      font-size: clamp(15px, 1.25vw, 20px);
+      line-height: 1.35;
+      color: var(--muted);
+      max-width: 28ch;
+    }
+    .pipeline {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      gap: clamp(10px, 1.5vw, 20px);
+      align-items: stretch;
+      flex: 1;
+      min-height: 0;
+    }
+    .pipe-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: clamp(22px, 2.4vw, 32px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+    }
+    .pipe-card .num {
+      font-size: clamp(52px, 6vw, 84px);
+      line-height: 0.95;
+    }
+    .pipe-card .layer {
+      font-size: clamp(28px, 3vw, 44px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--teal);
+    }
+    .arrow {
+      align-self: center;
+      font-size: clamp(28px, 3vw, 48px);
+      color: var(--teal);
+      font-weight: 700;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px dashed #3a3a3a;
+      border-radius: 999px;
+      padding: 10px 16px;
+      color: var(--muted);
+      font-size: clamp(13px, 1.2vw, 18px);
+      width: fit-content;
+      margin-top: 18px;
+    }
+    .chip::before {
+      content: "";
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+    .cols {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(20px, 3vw, 40px);
+      min-height: 0;
+    }
+    .cols .ok { border-color: rgba(109,171,166,0.45); }
+    .cols .plan { opacity: 0.85; }
+    .chart-wrap {
+      position: relative;
+      width: 100%;
+      flex: 1;
+      min-height: 220px;
+      height: auto;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 18px 18px 10px;
+    }
+    .stat-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px 18px;
+    }
+    .stat .label { font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+    .stat .value { font-size: clamp(22px, 2.4vw, 34px); font-weight: 700; letter-spacing: -0.03em; }
+    .stat .value.up { color: var(--ok); }
+    .stat .value.down { color: var(--danger); }
+    .delta {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+    }
+    .delta .sign { font-size: clamp(28px, 3vw, 42px); font-weight: 700; }
+    .delta .sign.up { color: var(--ok); }
+    .delta .sign.down { color: var(--danger); }
+    [data-step], [data-in] {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity .45s ease, transform .45s ease;
+      pointer-events: none;
+    }
+    [data-in="fade"] { transform: none; }
+    [data-in="left"] { transform: translateX(24px); }
+    .revealed {
+      opacity: 1 !important;
+      transform: none !important;
+      pointer-events: auto;
+    }
+    .hud {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 22px;
+      background: linear-gradient(180deg, transparent, rgba(0,0,0,.75));
+      font-size: 13px;
+      color: var(--muted-2);
+      z-index: 20;
+      pointer-events: none;
+    }
+    .hud strong { color: var(--teal); font-weight: 600; }
+    .dots { display: flex; gap: 8px; }
+    .dots span {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #333;
+    }
+    .dots span.on { background: var(--teal); }
+    .notes {
+      position: fixed;
+      right: 18px;
+      bottom: 52px;
+      width: min(420px, 38vw);
+      max-height: 28vh;
+      overflow: auto;
+      background: rgba(22,22,22,.92);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 13px;
+      line-height: 1.45;
+      color: #C8C8C8;
+      z-index: 25;
+      display: none;
+    }
+    .notes.show { display: block; }
+    .notes b { color: var(--teal); }
+    @media (max-width: 900px) {
+      .grid-2, .pipeline, .cols, .grid-3 { grid-template-columns: 1fr; }
+      .arrow { display: none; }
+      .title { max-width: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck" id="deck">
+
+    <!-- 0 capa -->
+    <section class="slide active" data-label="00 Capa" data-notes="Apresentação executiva do Tech Challenge, Fase 2. Pipeline híbrido do Indicador Criança Alfabetizada, no GCP.">
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:22px;">
+        <div class="eyebrow">Pós-Tech FIAP · AI Scientist · Fase 2</div>
+        <h1 class="title" style="font-size:clamp(42px,5.2vw,78px);max-width:16ch;">Indicador<br />Criança <span class="accent">Alfabetizada</span></h1>
+        <p class="hint" style="max-width:36ch;font-size:clamp(18px,1.6vw,26px);">Pipeline híbrido em arquitetura Medalhão, no GCP.</p>
+        <div class="stat-row" style="max-width:720px;margin-top:12px;">
+          <div class="stat"><div class="label">Fonte</div><div class="value" style="font-size:22px;">Inep</div></div>
+          <div class="stat"><div class="label">Corte do aluno</div><div class="value" style="font-size:22px;">743 pts</div></div>
+          <div class="stat"><div class="label">Meta pública</div><div class="value" style="font-size:22px;color:var(--teal);">80%</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="slide" data-label="01 Compromisso" data-notes="O Brasil assumiu um compromisso: toda criança alfabetizada até o fim do 2º ano. Corte Inep: 743. Indicador: percentual nesse patamar. Régua deste projeto: meta pactuada 80% em 2030. Universalização fica de fora.">
+      <div class="eyebrow">Tech Challenge · Fase 2 · FIAP</div>
+      <h1 class="title">Alfabetizada até o <span class="accent">2º ano</span></h1>
+      <div class="ruler">
+        <div class="mark" data-in="up">
+          <div class="k">Proficiência do aluno</div>
+          <div class="v">743</div>
+          <p class="hint">pontos na escala Saeb. É a nota de corte do Inep, não um percentual.</p>
+        </div>
+        <div class="mark" data-step="1" data-in="up">
+          <div class="k">Taxa de alfabetização</div>
+          <div class="v">%</div>
+          <p class="hint">percentual de alunos com proficiência de 743 ou mais.</p>
+        </div>
+        <div class="mark teal" data-step="2" data-in="up">
+          <div class="k">Meta da rede pública</div>
+          <div class="v" style="color:var(--teal)">80%</div>
+          <p class="hint">percentual pactuado para 2030. Também não é nota do aluno.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="slide" data-label="02 Território" data-notes="Um percentual nacional esconde o território. Rede pública. Bahia é o exemplo mais baixo em 2024, 35,96%; em 2023 era 36,78%. Ceará é o mais alto e a única UF em 80 ou acima: 84,46% em 2023 e 85,31% em 2024. Brasil, taxa oficial, foi de 55,9% para 59,2%. Faltam 20,8 pontos percentuais para 80. Municípios da rede municipal: 1.141 de 5.448 em 2024; 935 em 2023. O resultado na Gold para em 2024. 2025 só existe na tabela de meta.">
+      <div class="eyebrow">Taxa oficial · % de alunos com proficiência ≥ 743 · rede pública</div>
+      <h1 class="title">Dois anos · pior, Brasil e melhor</h1>
+      <div class="grid-2">
+        <div>
+          <div class="chart-wrap">
+            <canvas id="chartTerritorio"></canvas>
+          </div>
+          <p class="hint" style="max-width:none;margin-top:8px;">Bahia: menor taxa em 2024. Brasil: taxa oficial do país. Ceará: maior taxa e única UF em 80% ou mais. Resultado na Gold: 2023 e 2024.</p>
+        </div>
+        <div data-step="1" data-in="up" style="display:flex;flex-direction:column;justify-content:space-between;gap:16px;">
+          <div class="stat">
+            <div class="label">Taxa do Brasil · 2023 → 2024</div>
+            <div class="value">55,9% → 59,2%</div>
+          </div>
+          <div class="stat">
+            <div class="label">Distância da taxa 2024 até a meta 80%</div>
+            <div class="value" style="color:var(--danger)">−20,8 pp</div>
+          </div>
+          <div>
+            <div class="k" style="font-family:'Roboto Mono',monospace;letter-spacing:.12em;color:var(--muted);font-size:13px;">MUNICÍPIOS COM TAXA ≥ 80%</div>
+            <div class="huge teal" style="font-size:clamp(56px,6vw,88px);">1.141</div>
+            <p class="hint">de 5.448 da rede municipal em 2024 · 21%</p>
+          </div>
+          <div class="stat">
+            <div class="label">Mesma conta em 2023</div>
+            <div class="value">935 · 17%</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="slide" data-label="03 Arquitetura" data-notes="Batch do histórico oficial e um evento simulado, separados. Bronze cru. Silver traduz rede e junta fato à meta: município 97,8%, UF e Brasil 100%, limiar 95%. Gold com origem oficial. Na demo: 18 válidos, 1 duplicata, 1 quarentena. Ceará 85,31 não muda.">
+      <div class="eyebrow">Batch oficial + evento simulado · GCP</div>
+      <h1 class="title">Medalhão</h1>
+      <div class="pipeline">
+        <div class="pipe-card" data-in="up">
+          <div class="layer">Bronze</div>
+          <div class="num">6</div>
+          <p class="hint">fontes oficiais, cruas. Uma carga nova não apaga a anterior.</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="pipe-card" data-step="1" data-in="up">
+          <div class="layer">Silver</div>
+          <div class="num">97,8%</div>
+          <p class="hint">municípios que acharam a meta. UF e Brasil: 100%. Abaixo de 95%, a publicação para.</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="pipe-card" data-step="2" data-in="up">
+          <div class="layer">Gold</div>
+          <div class="num">3</div>
+          <p class="hint">indicador, meta × resultado e evolução. Origem oficial.</p>
+        </div>
+      </div>
+      <div data-step="3" data-in="up" style="margin-top:16px;">
+        <div class="eyebrow" style="margin-bottom:10px;">Evento simulado · trilha separada</div>
+        <div class="stat-row" style="grid-template-columns:repeat(4,1fr);">
+          <div class="stat"><div class="label">Eventos válidos</div><div class="value">18</div></div>
+          <div class="stat"><div class="label">Repetido, não soma</div><div class="value">1</div></div>
+          <div class="stat"><div class="label">Inválido, isolado</div><div class="value">1</div></div>
+          <div class="stat"><div class="label">Taxa oficial</div><div class="value" style="color:var(--teal)">não muda</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="slide" data-label="04 Gold" data-notes="Brasil 59,2 vs meta 80: não atingiu. Ceará 85,31, única UF da rede pública acima. Em 2024, 1.141 de 5.448 municípios atingiram 80; 96 sem meta nesse ano; 242 no total dos dois anos, média 53,7. MG +12,26; RS −18,76.">
+      <div class="eyebrow">Tudo abaixo é taxa em % · não é a nota 743</div>
+      <h1 class="title">Três leituras</h1>
+      <div class="grid-3" style="align-items:stretch;">
+        <div class="card" data-in="up">
+          <h3>Taxa do Brasil</h3>
+          <div class="num">59,2%</div>
+          <p class="hint">rede pública, 2024. Meta 80%. Não atingiu.</p>
+          <h3 style="margin-top:auto;">Taxa do Ceará</h3>
+          <div class="num">85,31%</div>
+          <p class="hint">2024. Em 2023 já estava em 84,46%. Única UF da rede pública em 80% ou mais.</p>
+        </div>
+        <div class="card" data-step="1" data-in="up">
+          <h3>Sem meta publicada</h3>
+          <div class="num">96</div>
+          <p class="hint">municípios em 2024. No biênio: 242. Taxa média 53,7%.</p>
+          <h3 style="margin-top:auto;">Taxa de quem ficou abaixo</h3>
+          <div class="num">55,2%</div>
+          <p class="hint">média municipal de quem não chegou a 80%.</p>
+        </div>
+        <div class="card" data-step="2" data-in="up">
+          <h3>Variação · Minas Gerais</h3>
+          <div class="num" style="color:var(--ok)">+12,26</div>
+          <p class="hint">pontos percentuais da taxa, 2023 para 2024.</p>
+          <h3 style="margin-top:auto;">Variação · Rio Grande do Sul</h3>
+          <div class="num" style="color:var(--danger)">−18,76</div>
+          <p class="hint">pontos percentuais da taxa, mesmo recorte.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="slide" data-label="05 Auditoria" data-notes="Quase 3,9 milhões de registros de alunos. Diferença mediana 0,0037 pp. O ranking permanece o do Inep. Corte 743 consistente com a classificação oficial.">
+      <div class="eyebrow">Conferência da taxa · a nota 743 fica no aluno</div>
+      <div class="grid-2">
+        <div data-in="up" style="justify-content:flex-end;">
+          <div class="k" style="font-family:'Roboto Mono',monospace;letter-spacing:.12em;color:var(--muted);font-size:13px;">DIFERENÇA MEDIANA DAS TAXAS</div>
+          <div class="huge teal">0,0037</div>
+          <p class="hint">pontos percentuais entre a taxa recalculada pelos alunos e a taxa oficial</p>
+        </div>
+        <div data-step="1" data-in="up" style="justify-content:flex-end;gap:16px;">
+          <div class="stat"><div class="label">Registros de aluno</div><div class="value">3,9 mi</div></div>
+          <div class="stat"><div class="label">Proficiência de corte</div><div class="value">743 pts</div></div>
+          <div class="stat"><div class="label">Quem tem nota</div><div class="value">a flag bate o corte</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="slide" data-label="06 IA futura" data-notes="Modelos são a fase seguinte. Ainda não existem aqui. Pode informar: taxa anterior, delta, rede, série, níveis 2024. Fica de fora: taxa/gap/status do mesmo ano. Cenário até 2030 não foi calculado.">
+      <div class="eyebrow">IA · ainda não treinada</div>
+      <h1 class="title">Próxima fase</h1>
+      <div class="cols">
+        <div class="card ok" data-in="up">
+          <h3>Entra</h3>
+          <div class="num" style="font-size:clamp(28px,3vw,40px);">passado</div>
+          <p class="hint">pode usar a taxa do ano anterior, a variação, a rede, a série e os níveis de 2024</p>
+        </div>
+        <div class="card plan" data-step="1" data-in="up">
+          <h3>Fica de fora</h3>
+          <div class="num" style="font-size:clamp(28px,3vw,40px);">mesmo ano</div>
+          <p class="hint">não usar a taxa, o gap nem o status do mesmo ano. Sem projeção até 2030.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="slide" data-label="07 Fecho" data-notes="O que está pronto é a base: território, trajetória e meta na mesma régua, com o número oficial preservado. A decisão continua humana.">
+      <div class="eyebrow">As três são taxa em % · rede pública</div>
+      <div class="ruler">
+        <div class="mark" data-in="up">
+          <div class="k">Taxa do Brasil · 2024</div>
+          <div class="v">59,2%</div>
+          <p class="hint">alunos alfabetizados no país</p>
+        </div>
+        <div class="mark teal" data-step="1" data-in="up">
+          <div class="k">Meta pactuada · 2030</div>
+          <div class="v" style="color:var(--teal)">80%</div>
+          <p class="hint">alvo da rede pública, não a nota 743</p>
+        </div>
+        <div class="mark" data-step="2" data-in="up">
+          <div class="k">Taxa do Ceará · 2024</div>
+          <div class="v">85,31%</div>
+          <p class="hint">única UF acima da meta</p>
+        </div>
+      </div>
+      <p class="hint" data-step="3" data-in="fade" style="max-width:none;">A decisão continua humana. A evidência já está na mesma régua.</p>
+    </section>
+  </div>
+
+  <div class="hud">
+    <div><strong id="label">01 Compromisso</strong> · ← → ou espaço · N notas · F tela cheia</div>
+    <div class="dots" id="dots"></div>
+    <div id="stepHud">passo 0</div>
+  </div>
+  <aside class="notes" id="notes"></aside>
+
+  <script>
+    const slides = [...document.querySelectorAll("section.slide")];
+    const dots = document.getElementById("dots");
+    const labelEl = document.getElementById("label");
+    const stepHud = document.getElementById("stepHud");
+    const notesEl = document.getElementById("notes");
+    let index = 0;
+    let step = 0;
+    let chartsReady = false;
+
+    slides.forEach((_, i) => {
+      const d = document.createElement("span");
+      if (i === 0) d.classList.add("on");
+      dots.appendChild(d);
+    });
+
+    function maxStep(slide) {
+      const steps = [...slide.querySelectorAll("[data-step]")].map(el => +el.dataset.step || 0);
+      return steps.length ? Math.max(...steps) : 0;
+    }
+
+    function reveal(slide, upTo) {
+      slide.querySelectorAll("[data-in]").forEach(el => {
+        const s = el.hasAttribute("data-step") ? (+el.dataset.step || 0) : 0;
+        if (s <= upTo) {
+          const delay = +(el.dataset.delay || 0);
+          setTimeout(() => el.classList.add("revealed"), delay);
+        } else {
+          el.classList.remove("revealed");
+        }
+      });
+      stepHud.textContent = `passo ${upTo}/${maxStep(slide)}`;
+    }
+
+    function show(i, reset = true) {
+      slides.forEach((s, n) => s.classList.toggle("active", n === i));
+      [...dots.children].forEach((d, n) => d.classList.toggle("on", n === i));
+      index = i;
+      if (reset) step = 0;
+      const slide = slides[i];
+      labelEl.textContent = slide.dataset.label || `Slide ${i + 1}`;
+      notesEl.innerHTML = `<b>Notas</b><br>${slide.dataset.notes || ""}`;
+      slide.querySelectorAll("[data-in], [data-step]").forEach(el => el.classList.remove("revealed"));
+      reveal(slide, step);
+      if (i === 1 || i === 3) ensureCharts();
+    }
+
+    function next() {
+      const slide = slides[index];
+      const max = maxStep(slide);
+      if (step < max) {
+        step += 1;
+        reveal(slide, step);
+        return;
+      }
+      if (index < slides.length - 1) show(index + 1);
+    }
+
+    function prev() {
+      if (step > 0) {
+        step -= 1;
+        reveal(slides[index], step);
+        return;
+      }
+      if (index > 0) {
+        show(index - 1, false);
+        step = maxStep(slides[index]);
+        reveal(slides[index], step);
+      }
+    }
+
+    function ensureCharts() {
+      if (chartsReady || typeof Chart === "undefined") return;
+      chartsReady = true;
+
+      const teal = "#6DABA6";
+      const muted = "#9A9A9A";
+      const danger = "#F87663";
+      const ink = "#F2F2F2";
+
+      const ctx1 = document.getElementById("chartTerritorio");
+      const fmt = [
+        ["36,78%", "55,9%", "84,46%"],
+        ["35,96%", "59,2%", "85,31%"]
+      ];
+      new Chart(ctx1, {
+        type: "bar",
+        data: {
+          labels: ["Bahia · menor", "Brasil · taxa oficial", "Ceará · maior"],
+          datasets: [
+            { label: "2023", data: [36.78, 55.9, 84.46], backgroundColor: "#3A5A58", borderRadius: 8, barThickness: 18 },
+            { label: "2024", data: [35.96, 59.2, 85.31], backgroundColor: [danger, "#8FB3B0", teal], borderRadius: 8, barThickness: 18 }
+          ]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: { padding: { right: 64 } },
+          plugins: {
+            legend: {
+              display: true,
+              labels: { color: ink, boxWidth: 12, font: { size: 13 } }
+            },
+            tooltip: {
+              callbacks: {
+                label: (c) => `${c.dataset.label}: ${fmt[c.datasetIndex][c.dataIndex]}`
+              }
+            }
+          },
+          scales: {
+            x: {
+              min: 0, max: 100,
+              grid: { color: "#222" },
+              title: { display: true, text: "Taxa de alfabetização (%)", color: muted, font: { size: 12 } },
+              ticks: { color: muted, callback: (v) => v + "%" }
+            },
+            y: {
+              grid: { display: false },
+              ticks: { color: ink, font: { size: 13, weight: "600" } }
+            }
+          },
+          animation: { duration: 700 }
+        },
+        plugins: [{
+          id: "metaAndLabels",
+          afterDatasetsDraw(chart) {
+            const { ctx, chartArea, scales } = chart;
+            const x80 = scales.x.getPixelForValue(80);
+            ctx.save();
+            ctx.strokeStyle = teal;
+            ctx.setLineDash([6, 6]);
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x80, chartArea.top);
+            ctx.lineTo(x80, chartArea.bottom);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = teal;
+            ctx.font = "600 12px Inter, sans-serif";
+            ctx.textAlign = "left";
+            ctx.fillText("Meta 80%", x80 + 6, chartArea.top + 12);
+            ctx.font = "600 12px Inter, sans-serif";
+            ctx.textBaseline = "middle";
+            chart.data.datasets.forEach((ds, i) => {
+              chart.getDatasetMeta(i).data.forEach((bar, j) => {
+                const text = fmt[i][j];
+                ctx.fillStyle = "#F2F2F2";
+                ctx.textAlign = "left";
+                ctx.fillText(text, bar.x + 6, bar.y);
+              });
+            });
+            ctx.restore();
+          }
+        }]
+      });
+
+      const ctx2 = document.getElementById("chartTrajetoria");
+      if (!ctx2) return;
+      new Chart(ctx2, {
+        type: "bar",
+        data: {
+          labels: ["Minas Gerais", "Rio Grande do Sul"],
+          datasets: [{
+            data: [12.26, -18.76],
+            backgroundColor: ["#2E9E8F", danger],
+            borderRadius: 10,
+            barThickness: 36
+          }]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (c) => `${c.parsed.x > 0 ? "+" : ""}${c.parsed.x.toLocaleString("pt-BR")} pp`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: "#222" },
+              ticks: {
+                color: muted,
+                callback: (v) => (v > 0 ? "+" : "") + v
+              }
+            },
+            y: {
+              grid: { display: false },
+              ticks: { color: ink, font: { size: 13, weight: "600" } }
+            }
+          }
+        }
+      });
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (["ArrowRight", "PageDown", " ", "Enter"].includes(e.key)) { e.preventDefault(); next(); }
+      if (["ArrowLeft", "PageUp", "Backspace"].includes(e.key)) { e.preventDefault(); prev(); }
+      if (e.key === "Home") show(0);
+      if (e.key === "End") show(slides.length - 1);
+      if (e.key === "n" || e.key === "N") notesEl.classList.toggle("show");
+      if (e.key === "f" || e.key === "F") {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+        else document.exitFullscreen?.();
+      }
+    });
+
+    document.getElementById("deck").addEventListener("click", (e) => {
+      if (e.target.closest(".notes")) return;
+      if (e.clientX < window.innerWidth * 0.22) prev();
+      else next();
+    });
+
+    show(0);
+    // Prefetch charts after first paint
+    setTimeout(ensureCharts, 400);
+  </script>
+</body>
+</html>

@@ -39,3 +39,7 @@ data/
 .DS_Store
 Thumbs.db
 __MACOSX/
+
+# Cópias locais de outros repositórios, só para comparação. Não entram nesta entrega.
+projetos-fiap/
+projetos_colegas/

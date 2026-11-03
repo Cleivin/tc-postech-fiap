@@ -6,11 +6,17 @@ Fonte do enunciado: [`docs/POSTECH - IAST - Tech Challenge - Fase 2.pdf`](../../
 
 | Arquivo | Uso |
 |---------|-----|
-| [pitch_executivo.pptx](pitch_executivo.pptx) | Apresentação pronta, 7 slides 16:9. A narração está nas notas de cada slide. |
-| [roteiro.md](roteiro.md) | O mesmo texto da narração, com tempo, para ensaiar fora do PowerPoint. |
-| [slides.md](slides.md) | Conteúdo de cada slide, caso precise remontar. |
-| [checklist.md](checklist.md) | Requisitos do PDF, diagnóstico, números conferidos e o que não dizer. |
+| [**pitch_executivo.html**](pitch_executivo.html) | **Apresentação principal** (estilo do exemplo HTML): fundo escuro, tipografia grande, teal, gráficos Chart.js, revelação por clique. Abra no navegador. |
+| [roteiro.md](roteiro.md) | Narração com tempo, para ensaiar. |
+| [slides.md](slides.md) | Conteúdo de cada slide em texto. |
+| [checklist.md](checklist.md) | Requisitos do PDF, números conferidos e o que não dizer. |
+| [pitch_executivo.pptx](pitch_executivo.pptx) | Versão PowerPoint antiga (opcional). |
 
-Para regenerar o arquivo: `python evidence/passo_11/pitch/build_apresentacao.py`.
+## Como apresentar o HTML
 
-643 palavras. Em 130 a 140 palavras por minuto, a fala dura cerca de 4 min 35 s a 4 min 55 s.
+1. Abra `pitch_executivo.html` no Chrome ou Edge (duplo clique ou arraste para o navegador).
+2. Teclas: **→ / Espaço** avança o passo ou o slide · **←** volta · **N** mostra/esconde notas · **F** tela cheia.
+3. Clique na metade direita da tela para avançar; na esquerda, para voltar.
+4. Precisa de internet na primeira abertura (fonte Inter + Chart.js via CDN).
+
+643 palavras no roteiro. Em 130 a 140 palavras por minuto, a fala dura cerca de 4 min 35 s a 4 min 55 s.
