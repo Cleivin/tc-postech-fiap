@@ -1,6 +1,8 @@
 # Passo 11 — Vídeo
 
-Roteiro e apresentação prontos. O link público entra no [README da raiz](../../README.md), na seção **Vídeo (Passo 11)**. Hoje o endereço ainda é o placeholder `https://www.youtube.com/watch?v=COLE_O_ID`. Depois de publicar no YouTube, troque só o `COLE_O_ID`.
+Vídeo publicado: https://youtu.be/xUfqOCZPeNk
+
+O mesmo link está no [README da raiz](../../README.md), na seção **Vídeo (Passo 11)**.
 
 Material da gravação em [`pitch/`](pitch/README.md):
 

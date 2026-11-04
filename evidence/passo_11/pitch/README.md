@@ -1,6 +1,6 @@
 # Pitch executivo — Passo 11
 
-Material da gravação do vídeo de até 5 minutos. A URL pública fica no [README da raiz](../../../README.md), seção **Vídeo (Passo 11)**. Substitua `COLE_O_ID` depois de publicar no YouTube.
+Material da gravação do vídeo de até 5 minutos. Vídeo publicado: https://youtu.be/xUfqOCZPeNk — o mesmo link está no [README da raiz](../../../README.md).
 
 Fonte do enunciado: [`docs/POSTECH - IAST - Tech Challenge - Fase 2.pdf`](../../../docs/POSTECH%20-%20IAST%20-%20Tech%20Challenge%20-%20Fase%202.pdf). Números da run de referência `20d3623d0430`.
 

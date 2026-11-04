@@ -416,7 +416,7 @@ Nenhuma chave no Git. Confira `git status` em `credentials/` e `.env`.
 
 ### Passo 11 — Vídeo (≤ 5 min)
 
-**Status:** pendente · **Evidência:** `evidence/passo_11/`
+**Status:** feito · **Evidência:** `evidence/passo_11/` · **Vídeo:** https://youtu.be/xUfqOCZPeNk
 
 Roteiro, nesta ordem:
 

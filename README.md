@@ -1,6 +1,8 @@
 # Tech Challenge — Fase 2: Pipeline híbrido de alfabetização
 
 **Pós-graduação:** POSTECH — AI Scientist (IAST) | **FIAP**  
+**Repositório:** https://github.com/Cleivin/tc-postech-fiap  
+**Vídeo:** https://youtu.be/xUfqOCZPeNk  
 **Cloud:** Google Cloud Platform, região do lake `us-central1`, BigQuery em `US`
 
 Pipeline batch + streaming sobre o indicador de alfabetização do Inep (Base dos Dados), em arquitetura Medalhão. A comparação de cada passo com o enunciado está em [`docs/avaliacao_conformidade.md`](docs/avaliacao_conformidade.md). O guia de construção é [`docs/Tech_Challenge_Fase2_Passo_a_Passo.md`](docs/Tech_Challenge_Fase2_Passo_a_Passo.md).
@@ -332,7 +334,7 @@ O Inep / Base dos Dados chega assim. A Bronze guarda o valor cru; a Gold não co
 
 - **Streaming simulado.** O Inep não publica este indicador em tempo real. O evento leva `origem = simulado` e não altera a taxa oficial.
 - **Telemetria do Passo 9.** A duração em `pipeline_runs` nessa fotografia é a da Silver (~56 s). Bytes de Bronze e de Gold vieram do manifesto e do `dry_run`. O código já grava as outras etapas; essa run de referência foi medida antes dessas linhas existirem na tabela.
-- **Vídeo.** Roteiro e apresentação prontos. Antes de entregar, substitua o placeholder da seção seguinte pela URL pública do YouTube.
+- **Vídeo.** Publicado: https://youtu.be/xUfqOCZPeNk
 
 ---
 
@@ -340,9 +342,7 @@ O Inep / Base dos Dados chega assim. A Bronze guarda o valor cru; a Gold não co
 
 Vídeo executivo, até 5 minutos:
 
-**https://www.youtube.com/watch?v=COLE_O_ID**
-
-Troque `COLE_O_ID` pelo identificador do vídeo depois de publicar. O link precisa abrir sem login.
+**https://youtu.be/xUfqOCZPeNk**
 
 O vídeo cobre o problema (2º ano, corte 743, meta pactuada 80), a arquitetura (carga em lote + evento simulado, Bronze → Silver → Gold no GCP) e o que a Gold já mostra (Brasil 2024, **59,2** contra meta **80**; Ceará 2024, rede pública, **85,31**). Modelo e previsão até 2030 ficam como próxima fase.
 
