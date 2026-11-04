@@ -46,4 +46,4 @@ Um clone gera um `run_id` novo. Os CSV desta pasta de evidências permanecem os 
 
 ## Vídeo
 
-Passo 11 ainda não foi gravado. O README reserva a seção do link e não inventa URL.
+O roteiro do Passo 11 está pronto. O README da raiz reserva o link: troque `COLE_O_ID` pela URL pública do YouTube. Não invente o endereço antes de publicar.

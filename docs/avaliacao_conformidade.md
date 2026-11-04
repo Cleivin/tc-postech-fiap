@@ -18,7 +18,7 @@ A rubrica do guia está em [`Tech_Challenge_Fase2_Passo_a_Passo.md`](Tech_Challe
 | 8 Observabilidade | Duas runs em append e uma falha com registro + alerta | Atendido | duas linhas `success` + `prove_fail_81ee7cf0f8ea` + `message_id` |
 | 9 FinOps | Quantidade medida (não chute) e premissa de cadência na mesma página | Atendido | `evidence/passo_09/custo.md` |
 | 10 README / clone | Clone seguindo só o README chega na Gold e no consumo de um evento | Atendido no texto e nos pins | [`README.md`](../README.md), `evidence/passo_10/` |
-| 11 Vídeo | Roteiro de até 5 min com um número da Gold | Pendente | sem link |
+| 11 Vídeo | Roteiro de até 5 min com um número da Gold | Roteiro pronto. Falta a URL pública | placeholder no README; trocar `COLE_O_ID` |
 
 ## Rubrica
 
@@ -31,7 +31,7 @@ A rubrica do guia está em [`Tech_Challenge_Fase2_Passo_a_Passo.md`](Tech_Challe
 | 10 | FinOps | Passo 9 | 0,19 GiB no bucket; ~0,021 TiB/mês de query na cadência 1 batch/dia; custo projetado $0 dentro do Always Free. |
 | 10 | Cloud + repo | `evidence/` + README | Jobs reais. Chave e `.env` fora do Git. |
 | 5 | README | Passo 10 | Contexto, diagrama, trade-offs, acesso à fonte (sem egress, run nova sem apagar a anterior, sem agenda, coluna do contrato), FinOps, vazamento de alvo, limitações. |
-| 15 | Vídeo | Passo 11 | Não entregue. |
+| 15 | Vídeo | Passo 11 | Roteiro e HTML prontos. A nota fecha quando a URL do YouTube substituir `COLE_O_ID` no README. |
 
 Diferenciais que já estão no repositório: validação cruzada do microdado (`validacao_microdado`), anomalia de `rede` documentada, e a regra de join executável (`quality/validate.py --layer silver` + `prove_failure.py`). Não há orquestrador nem Terraform, e o README não afirma que existam.
 
@@ -51,4 +51,4 @@ Diferenciais que já estão no repositório: validação cruzada do microdado (`
 2. **A taxa nacional de 2025 (66,0) não entra na Gold.** Ela existe em `meta_alfabetizacao_brasil`. O produto Brasil é ancorado nos anos do agregado de UF (2023–2024).
 3. **Roraima e o Distrito Federal não têm linha de rede pública no agregado `uf`.** A meta de RR está nula; o fato oficial simplesmente não traz essas UFs em `rede = 5`. A Gold não inventa a linha.
 4. **O teste de conexão, até o Passo 10, imprimia erro e ainda assim encerrava com sucesso.** Passou a sair com código 1 se Storage, BigQuery ou o tópico de streaming falharem. O tópico de alerta continua opcional nesse teste, porque o Passo 8 o cria.
-5. **Vídeo (Passo 11) não existe.** O README deixa o espaço do link explícito.
+5. **Vídeo (Passo 11).** O roteiro está pronto. A entrega fecha quando a URL pública substituir `https://www.youtube.com/watch?v=COLE_O_ID` no README.

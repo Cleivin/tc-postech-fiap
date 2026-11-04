@@ -40,6 +40,8 @@ data/
 Thumbs.db
 __MACOSX/
 
-# Cópias locais de outros repositórios, só para comparação. Não entram nesta entrega.
+# Cópias locais de outros repositórios e material de comparação. Não entram nesta entrega.
 projetos-fiap/
 projetos_colegas/
+projetos_colegas.zip
+docs/prompt_baixar_e_avaliar_colegas.md

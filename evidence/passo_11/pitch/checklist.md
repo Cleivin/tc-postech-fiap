@@ -16,7 +16,7 @@ A meta usada para distância até o resultado é a pactuada: `meta_alfabetizacao
 | Qualidade bloqueante, taxa de join, falha demonstrada | Chave nula, duplicata e código órfão bloqueiam. `join_match` ≥ 0,95. `prove_failure.py` termina com erro de propósito. |
 | Três estados: atingiu, não atingiu, sem meta. Nulo não vira zero | Implementado. 242 linhas municipais ficam `sem_meta`. |
 | Monitoramento persistido e alerta; FinOps com quantidade medida | `pipeline_runs` e tópico de alerta. Custo medido dentro do Always Free, premissa de 1 batch/dia. |
-| README reproduzível e vídeo de até 5 minutos | README cobre o clone até a Gold. O vídeo (15 pontos) ainda não foi gravado. |
+| README reproduzível e vídeo de até 5 minutos | README cobre o clone até a Gold. O vídeo fecha quando `COLE_O_ID` virar a URL do YouTube. |
 
 A rubrica soma 90 pontos. Pela avaliação interna (`docs/avaliacao_conformidade.md`), 75 pontos estão atendidos. Faltam os 15 do vídeo.
 
@@ -49,14 +49,14 @@ Antes de gravar, confira o slide 2 contra `conferencia.csv` e `insights_consulta
 
 | Exigência do vídeo no PDF | Situação neste roteiro |
 |---|---|
-| Até 5 minutos, linguagem executiva | 643 palavras, cerca de 4 min 35 s a 4 min 55 s |
+| Até 5 minutos, linguagem executiva | Frases curtas em `roteiro.md`, com pausa. Alvo: dentro de 5 minutos |
 | Problema de negócio | Compromisso, 2º ano, corte 743, meta pactuada 80 |
 | Arquitetura, no que a liderança precisa ouvir | Bronze, Silver, Gold, trava de 95%, evento simulado separado |
 | Valor para análise educacional | Território, três status, trajetória de MG e RS, municípios em 80 |
 | Potencial de IA, como evolução | Alvo futuro e insumos do passado. Modelo não apresentado como pronto |
 | Números iguais aos do repositório | Conferidos na Gold, no README e em `insights_consultas.md` |
 | Eixos rotulados, se houver gráfico | Slide 2: taxa (%), rede pública, 2024, linha da meta 80 |
-| Link no README | Ainda vazio até a gravação |
+| Link no README | Placeholder `COLE_O_ID`. Trocar pela URL do YouTube depois de publicar |
 
 ## O que não apresentar como entregue
 

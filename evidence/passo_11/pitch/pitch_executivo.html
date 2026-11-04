@@ -184,6 +184,30 @@
       letter-spacing: -0.03em;
       color: var(--teal);
     }
+    .pipe-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin: 4px 0 8px;
+    }
+    .pipe-list li {
+      font-size: clamp(13px, 1.15vw, 17px);
+      line-height: 1.25;
+      color: #C8C8C8;
+      padding-left: 14px;
+      position: relative;
+    }
+    .pipe-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.45em;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--teal);
+    }
     .arrow {
       align-self: center;
       font-size: clamp(28px, 3vw, 48px);
@@ -315,21 +339,17 @@
   <div class="deck" id="deck">
 
     <!-- 0 capa -->
-    <section class="slide active" data-label="00 Capa" data-notes="Apresentação executiva do Tech Challenge, Fase 2. Pipeline híbrido do Indicador Criança Alfabetizada, no GCP.">
+    <section class="slide active" data-label="00 Apresentação" data-notes="Olá, eu sou o Cleivin, aluno do curso de Cientista de Dados com IA. Esta é a Fase 2 do Tech Challenge, e aqui eu apresento um pipeline em arquitetura Medalhão para o Indicador Criança Alfabetizada.">
       <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:22px;">
-        <div class="eyebrow">Pós-Tech FIAP · AI Scientist · Fase 2</div>
+        <div class="eyebrow">Tech Challenge · Pós-Tech FIAP · AI Scientist</div>
         <h1 class="title" style="font-size:clamp(42px,5.2vw,78px);max-width:16ch;">Indicador<br />Criança <span class="accent">Alfabetizada</span></h1>
-        <p class="hint" style="max-width:36ch;font-size:clamp(18px,1.6vw,26px);">Pipeline híbrido em arquitetura Medalhão, no GCP.</p>
-        <div class="stat-row" style="max-width:720px;margin-top:12px;">
-          <div class="stat"><div class="label">Fonte</div><div class="value" style="font-size:22px;">Inep</div></div>
-          <div class="stat"><div class="label">Corte do aluno</div><div class="value" style="font-size:22px;">743 pts</div></div>
-          <div class="stat"><div class="label">Meta pública</div><div class="value" style="font-size:22px;color:var(--teal);">80%</div></div>
-        </div>
+        <p class="hint" style="max-width:38ch;font-size:clamp(18px,1.6vw,26px);">Fase 2 — pipeline híbrido em arquitetura Medalhão, com dados oficiais do Inep.</p>
+        <p style="margin-top:8px;font-size:clamp(16px,1.4vw,22px);color:var(--muted);">Cleivin · FIAP</p>
       </div>
     </section>
 
     <!-- 1 -->
-    <section class="slide" data-label="01 Compromisso" data-notes="O Brasil assumiu um compromisso: toda criança alfabetizada até o fim do 2º ano. Corte Inep: 743. Indicador: percentual nesse patamar. Régua deste projeto: meta pactuada 80% em 2030. Universalização fica de fora.">
+    <section class="slide" data-label="01 Compromisso" data-notes="Tudo começa com um compromisso do Brasil: que toda criança esteja alfabetizada até o fim do segundo ano do ensino fundamental. Para medir isso, o Inep definiu um ponto de corte de 743 na escala do Saeb. O indicador, então, é o percentual de estudantes que chegam a esse ponto. E a régua que eu uso aqui é a meta pactuada para a rede pública: 80% até 2030. Já o 100% é outra conta, e fica fora desta conversa.">
       <div class="eyebrow">Tech Challenge · Fase 2 · FIAP</div>
       <h1 class="title">Alfabetizada até o <span class="accent">2º ano</span></h1>
       <div class="ruler">
@@ -352,7 +372,7 @@
     </section>
 
     <!-- 2 -->
-    <section class="slide" data-label="02 Território" data-notes="Um percentual nacional esconde o território. Rede pública. Bahia é o exemplo mais baixo em 2024, 35,96%; em 2023 era 36,78%. Ceará é o mais alto e a única UF em 80 ou acima: 84,46% em 2023 e 85,31% em 2024. Brasil, taxa oficial, foi de 55,9% para 59,2%. Faltam 20,8 pontos percentuais para 80. Municípios da rede municipal: 1.141 de 5.448 em 2024; 935 em 2023. O resultado na Gold para em 2024. 2025 só existe na tabela de meta.">
+    <section class="slide" data-label="02 Território" data-notes="Só que o percentual nacional esconde o território. Em 2024, na rede pública, o Ceará chegou a cerca de 85%, acima da meta. A Bahia, por outro lado, ficou em cerca de 36%. São quarenta e nove pontos percentuais de diferença entre os dois. No país como um todo, a taxa subiu de quase 56%, em 2023, para quase 60%, em 2024. Mesmo assim, ainda faltam cerca de 20 pontos para os 80% da meta. E nos municípios, só cerca de um quinto bateu a meta em 2024: foram 1.141, contra 935 no ano anterior. Ou seja, o dado mostra onde o resultado já chegou, onde a distância ainda é grande, e também onde a meta nem chegou a ser cadastrada.">
       <div class="eyebrow">Taxa oficial · % de alunos com proficiência ≥ 743 · rede pública</div>
       <h1 class="title">Dois anos · pior, Brasil e melhor</h1>
       <div class="grid-2">
@@ -385,26 +405,44 @@
     </section>
 
     <!-- 3 -->
-    <section class="slide" data-label="03 Arquitetura" data-notes="Batch do histórico oficial e um evento simulado, separados. Bronze cru. Silver traduz rede e junta fato à meta: município 97,8%, UF e Brasil 100%, limiar 95%. Gold com origem oficial. Na demo: 18 válidos, 1 duplicata, 1 quarentena. Ceará 85,31 não muda.">
+    <section class="slide" data-label="03 Arquitetura" data-notes="Vale deixar claro: nesta fase eu não prevejo 2030 e não treino modelo. O foco é organizar a base. Na Bronze, entram os seis conjuntos oficiais, ainda crus: alunos, municípios, estados e as metas do país, tanto por UF quanto por município. Na Silver, eu limpo esses dados e faço eles conversarem. Traduzo os códigos com o dicionário oficial e cruzo o resultado de cada lugar com a meta daquele mesmo lugar. Se menos de 95% desse cruzamento der certo, a publicação para. E quando não existe meta, o campo fica em branco: eu não preencho esse vazio com nenhum número. Depois, isso aparece como o status sem meta. Por fim, na Gold ficam as tabelas prontas para análise, todas com origem oficial. Além da carga oficial em lote, existe um fluxo de eventos simulado, só para mostrar a chegada contínua de dados. Ele corre numa trilha separada e não entra na conta da taxa oficial, então os números da Gold não mudam.">
       <div class="eyebrow">Batch oficial + evento simulado · GCP</div>
       <h1 class="title">Medalhão</h1>
       <div class="pipeline">
         <div class="pipe-card" data-in="up">
           <div class="layer">Bronze</div>
-          <div class="num">6</div>
+          <ul class="pipe-list">
+            <li>alunos</li>
+            <li>municípios</li>
+            <li>estados (UF)</li>
+            <li>meta Brasil</li>
+            <li>meta UF</li>
+            <li>meta município</li>
+          </ul>
           <p class="hint">fontes oficiais, cruas. Uma carga nova não apaga a anterior.</p>
         </div>
         <div class="arrow">→</div>
         <div class="pipe-card" data-step="1" data-in="up">
           <div class="layer">Silver</div>
-          <div class="num">97,8%</div>
-          <p class="hint">municípios que acharam a meta. UF e Brasil: 100%. Abaixo de 95%, a publicação para.</p>
+          <ul class="pipe-list">
+            <li>limpa os dados</li>
+            <li>traduz os códigos</li>
+            <li>cruza resultado com meta</li>
+            <li>abaixo de 95%, para</li>
+          </ul>
+          <p class="hint">sem meta fica em branco — depois vira o status sem meta.</p>
         </div>
         <div class="arrow">→</div>
         <div class="pipe-card" data-step="2" data-in="up">
           <div class="layer">Gold</div>
-          <div class="num">3</div>
-          <p class="hint">indicador, meta × resultado e evolução. Origem oficial.</p>
+          <ul class="pipe-list">
+            <li>indicador município</li>
+            <li>indicador UF</li>
+            <li>meta × resultado</li>
+            <li>evolução temporal</li>
+            <li>validação microdado</li>
+          </ul>
+          <p class="hint">produtos analíticos. Origem oficial.</p>
         </div>
       </div>
       <div data-step="3" data-in="up" style="margin-top:16px;">
@@ -419,7 +457,7 @@
     </section>
 
     <!-- 4 -->
-    <section class="slide" data-label="04 Gold" data-notes="Brasil 59,2 vs meta 80: não atingiu. Ceará 85,31, única UF da rede pública acima. Em 2024, 1.141 de 5.448 municípios atingiram 80; 96 sem meta nesse ano; 242 no total dos dois anos, média 53,7. MG +12,26; RS −18,76.">
+    <section class="slide" data-label="04 Gold" data-notes="A camada Gold já entrega três leituras. A primeira é o próprio resultado. Em 2024, o Brasil tem quase 60% dos alunos alfabetizados, mas ainda não atingiu a meta de 80%. O Ceará, com cerca de 85%, está acima dela e é a única UF da rede pública nesse patamar. A segunda leitura é a lacuna de cadastro: os municípios sem meta. Em 2024, são 96. A taxa média deles passa de 50% de crianças alfabetizadas, cerca de 30 pontos abaixo da meta. Mas atenção: tratar essas cidades como se tivessem falhado distorce a realidade, porque, sem meta publicada, não dá para julgar atingimento. A terceira leitura é a trajetória, ainda sem previsão. De 2023 para 2024, Minas Gerais subiu cerca de 12 pontos, e o Rio Grande do Sul caiu cerca de 18. Essa evolução dá para ver por município, por estado e até do país. E essas tabelas já estão prontas para um painel de BI, mas o BI em si não faz parte desta entrega.">
       <div class="eyebrow">Tudo abaixo é taxa em % · não é a nota 743</div>
       <h1 class="title">Três leituras</h1>
       <div class="grid-3" style="align-items:stretch;">
@@ -451,24 +489,25 @@
     </section>
 
     <!-- 5 -->
-    <section class="slide" data-label="05 Auditoria" data-notes="Quase 3,9 milhões de registros de alunos. Diferença mediana 0,0037 pp. O ranking permanece o do Inep. Corte 743 consistente com a classificação oficial.">
-      <div class="eyebrow">Conferência da taxa · a nota 743 fica no aluno</div>
-      <div class="grid-2">
-        <div data-in="up" style="justify-content:flex-end;">
-          <div class="k" style="font-family:'Roboto Mono',monospace;letter-spacing:.12em;color:var(--muted);font-size:13px;">DIFERENÇA MEDIANA DAS TAXAS</div>
-          <div class="huge teal">0,0037</div>
-          <p class="hint">pontos percentuais entre a taxa recalculada pelos alunos e a taxa oficial</p>
+    <section class="slide" data-label="05 Auditoria" data-notes="Para conferir, eu recalculei a taxa com quase 4 milhões de registros de alunos e comparei com a taxa oficial. A diferença é praticamente nula. Ou seja, o dado bate, e o indicador publicado continua sendo o do Inep. O projeto não reinventa o critério.">
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:28px;min-height:0;">
+        <div class="eyebrow" style="margin-bottom:0;">Conferência com o microdado</div>
+        <h1 class="title">O número oficial se <span class="accent">sustenta</span></h1>
+        <div data-in="up" style="display:flex;flex-direction:column;gap:10px;">
+          <div class="k" style="font-family:'Roboto Mono',monospace;letter-spacing:.12em;color:var(--muted);font-size:13px;">DIFERENÇA NA AUDITORIA</div>
+          <div class="huge teal" style="font-size:clamp(48px,7vw,96px);">praticamente nula</div>
+          <p class="hint" style="max-width:42ch;">recalculei a taxa com os alunos e comparei com a oficial</p>
         </div>
-        <div data-step="1" data-in="up" style="justify-content:flex-end;gap:16px;">
-          <div class="stat"><div class="label">Registros de aluno</div><div class="value">3,9 mi</div></div>
-          <div class="stat"><div class="label">Proficiência de corte</div><div class="value">743 pts</div></div>
-          <div class="stat"><div class="label">Quem tem nota</div><div class="value">a flag bate o corte</div></div>
+        <div class="stat-row" data-step="1" data-in="up" style="max-width:820px;grid-template-columns:repeat(3,1fr);">
+          <div class="stat"><div class="label">Registros de aluno</div><div class="value">~4 mi</div></div>
+          <div class="stat"><div class="label">Corte Saeb</div><div class="value">743</div></div>
+          <div class="stat"><div class="label">Indicador publicado</div><div class="value" style="font-size:clamp(18px,1.8vw,26px);color:var(--teal);">o do Inep</div></div>
         </div>
       </div>
     </section>
 
     <!-- 6 -->
-    <section class="slide" data-label="06 IA futura" data-notes="Modelos são a fase seguinte. Ainda não existem aqui. Pode informar: taxa anterior, delta, rede, série, níveis 2024. Fica de fora: taxa/gap/status do mesmo ano. Cenário até 2030 não foi calculado.">
+    <section class="slide" data-label="06 IA futura" data-notes="Os modelos de IA ficam para a próxima fase; aqui, eles ainda não existem. O que pode entrar no modelo é o passado: a taxa anterior, a variação, a rede, a série e os níveis de 2024. O que fica de fora são as informações do mesmo ano: a taxa, a distância até a meta e o status. Sem essa separação, o modelo só repetiria a conta. E a projeção até 2030, vale reforçar, também não foi feita.">
       <div class="eyebrow">IA · ainda não treinada</div>
       <h1 class="title">Próxima fase</h1>
       <div class="cols">
@@ -486,26 +525,33 @@
     </section>
 
     <!-- 7 -->
-    <section class="slide" data-label="07 Fecho" data-notes="O que está pronto é a base: território, trajetória e meta na mesma régua, com o número oficial preservado. A decisão continua humana.">
-      <div class="eyebrow">As três são taxa em % · rede pública</div>
-      <div class="ruler">
+    <section class="slide" data-label="07 Fecho" data-notes="Então, olhando a Gold agora: o Brasil está em quase 60%, com meta de 80%, e ainda não chegou lá. O Ceará já passou, com cerca de 85%. Em 2024, 96 municípios ficaram sem meta publicada. E na trajetória, Minas Gerais subiu cerca de 12 pontos, enquanto o Rio Grande do Sul caiu cerca de 18. Isso tudo é o passado organizado. Para prever até 2030, é aí que entra a próxima fase, com machine learning e IA.">
+      <div class="eyebrow">Gold · origem oficial · rede pública · 2024</div>
+      <h1 class="title">O que a Gold mostra <span class="accent">agora</span></h1>
+      <div class="ruler" style="flex:0.85;">
         <div class="mark" data-in="up">
-          <div class="k">Taxa do Brasil · 2024</div>
+          <div class="k">Brasil</div>
           <div class="v">59,2%</div>
-          <p class="hint">alunos alfabetizados no país</p>
+          <p class="hint">meta 80% · não atingiu · faltam 20,8 pp</p>
         </div>
         <div class="mark teal" data-step="1" data-in="up">
-          <div class="k">Meta pactuada · 2030</div>
-          <div class="v" style="color:var(--teal)">80%</div>
-          <p class="hint">alvo da rede pública, não a nota 743</p>
+          <div class="k">Ceará</div>
+          <div class="v" style="color:var(--teal)">85,31%</div>
+          <p class="hint">acima da meta · única UF nesse patamar</p>
         </div>
         <div class="mark" data-step="2" data-in="up">
-          <div class="k">Taxa do Ceará · 2024</div>
-          <div class="v">85,31%</div>
-          <p class="hint">única UF acima da meta</p>
+          <div class="k">Sem meta</div>
+          <div class="v">96</div>
+          <p class="hint">municípios em 2024 · status sem meta</p>
         </div>
       </div>
-      <p class="hint" data-step="3" data-in="fade" style="max-width:none;">A decisão continua humana. A evidência já está na mesma régua.</p>
+      <div class="stat-row" data-step="3" data-in="up" style="max-width:720px;margin-top:8px;">
+        <div class="stat"><div class="label">Minas Gerais · 2023→2024</div><div class="value up">+12,26 pp</div></div>
+        <div class="stat"><div class="label">Rio Grande do Sul · 2023→2024</div><div class="value down">−18,76 pp</div></div>
+      </div>
+      <p class="hint" data-step="4" data-in="fade" style="max-width:none;margin-top:18px;font-size:clamp(16px,1.4vw,22px);color:var(--fg);">
+        Passado organizado. Para prever até <span style="color:var(--teal)">2030</span> → próxima fase com machine learning e IA.
+      </p>
     </section>
   </div>
 

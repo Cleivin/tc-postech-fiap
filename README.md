@@ -332,15 +332,21 @@ O Inep / Base dos Dados chega assim. A Bronze guarda o valor cru; a Gold não co
 
 - **Streaming simulado.** O Inep não publica este indicador em tempo real. O evento leva `origem = simulado` e não altera a taxa oficial.
 - **Telemetria do Passo 9.** A duração em `pipeline_runs` nessa fotografia é a da Silver (~56 s). Bytes de Bronze e de Gold vieram do manifesto e do `dry_run`. O código já grava as outras etapas; essa run de referência foi medida antes dessas linhas existirem na tabela.
-- **Vídeo.** O Passo 11 ainda não foi gravado. A seção seguinte reserva o link.
+- **Vídeo.** Roteiro e apresentação prontos. Antes de entregar, substitua o placeholder da seção seguinte pela URL pública do YouTube.
 
 ---
 
 ## Vídeo (Passo 11)
 
-Ainda não gravado. Quando existir, o link entra aqui.
+Vídeo executivo, até 5 minutos:
 
-Roteiro e slides: [`evidence/passo_11/pitch/`](evidence/passo_11/pitch/README.md). O problema (2º ano, indicador, meta 80), a arquitetura em uma frase (batch histórico + evento simulado, Bronze → Silver → Gold no GCP), um número da Gold igual ao deste README (Ceará 2024, rede pública, 85,31, ou Brasil 2024, 59,2 contra meta 80), e o que a Fase 3 pode prever sem usar a taxa do mesmo ano como feature.
+**https://www.youtube.com/watch?v=COLE_O_ID**
+
+Troque `COLE_O_ID` pelo identificador do vídeo depois de publicar. O link precisa abrir sem login.
+
+O vídeo cobre o problema (2º ano, corte 743, meta pactuada 80), a arquitetura (carga em lote + evento simulado, Bronze → Silver → Gold no GCP) e o que a Gold já mostra (Brasil 2024, **59,2** contra meta **80**; Ceará 2024, rede pública, **85,31**). Modelo e previsão até 2030 ficam como próxima fase.
+
+Apresentação e roteiro da gravação: [`evidence/passo_11/pitch/`](evidence/passo_11/pitch/README.md).
 
 ---
 
@@ -366,7 +372,7 @@ tc-postech-fiap/
 └── evidence/
     ├── passo_01/ … passo_09/      # cada pasta tem ANALISE.md
     ├── passo_10/                  # este README e as consultas de leitura
-    └── passo_11/pitch/            # roteiro e slides; vídeo ainda não gravado
+    └── passo_11/pitch/            # HTML e roteiro do vídeo; o link fica na seção Vídeo
 ```
 
 Contrato de grain, chave e limiar: [`docs/contrato_dados.md`](docs/contrato_dados.md).

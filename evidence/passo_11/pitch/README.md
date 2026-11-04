@@ -1,6 +1,6 @@
 # Pitch executivo — Passo 11
 
-Material para gravar o vídeo de até 5 minutos. O vídeo em si ainda não foi gravado. O link continua vazio no [README da raiz](../../../README.md).
+Material da gravação do vídeo de até 5 minutos. A URL pública fica no [README da raiz](../../../README.md), seção **Vídeo (Passo 11)**. Substitua `COLE_O_ID` depois de publicar no YouTube.
 
 Fonte do enunciado: [`docs/POSTECH - IAST - Tech Challenge - Fase 2.pdf`](../../../docs/POSTECH%20-%20IAST%20-%20Tech%20Challenge%20-%20Fase%202.pdf). Números da run de referência `20d3623d0430`.
 
@@ -10,7 +10,7 @@ Fonte do enunciado: [`docs/POSTECH - IAST - Tech Challenge - Fase 2.pdf`](../../
 | [roteiro.md](roteiro.md) | Narração com tempo, para ensaiar. |
 | [slides.md](slides.md) | Conteúdo de cada slide em texto. |
 | [checklist.md](checklist.md) | Requisitos do PDF, números conferidos e o que não dizer. |
-| [pitch_executivo.pptx](pitch_executivo.pptx) | Versão PowerPoint antiga (opcional). |
+| [pitch_executivo.pptx](pitch_executivo.pptx) | Rascunho antigo. A gravação usa o HTML. |
 
 ## Como apresentar o HTML
 
@@ -19,4 +19,4 @@ Fonte do enunciado: [`docs/POSTECH - IAST - Tech Challenge - Fase 2.pdf`](../../
 3. Clique na metade direita da tela para avançar; na esquerda, para voltar.
 4. Precisa de internet na primeira abertura (fonte Inter + Chart.js via CDN).
 
-643 palavras no roteiro. Em 130 a 140 palavras por minuto, a fala dura cerca de 4 min 35 s a 4 min 55 s.
+A narração está em frases curtas em [roteiro.md](roteiro.md), com pausa marcada. O alvo é ficar dentro de 5 minutos.
